@@ -1,5 +1,9 @@
 # ascii-plague-shooter
+![downloads](https://img.shields.io/github/downloads/xyzpw/ascii-plague-shooter/total)
+
 **ascii-plague-shooter** is a simple top-down shooter game made with ncurses.<br>
+
+![ascii-plague-shooter-preview-github](https://github.com/user-attachments/assets/4598c582-620b-4bfb-9fe7-5a88e28c47fa)
 
 ## Gameplay
 The objective is to survive against rage-infected zombie-like enemies
