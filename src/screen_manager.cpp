@@ -100,7 +100,7 @@ void playGame(World world)
         respondToKeyPress(world, myPlayer, capturedKey);
 
         // 1% chance of spawning an infected during this loop.
-        if (std::rand() % 101 == 100){
+        if (checkProbability(0.01)){
             Infected inf{.coordinates=getInfectedSpawnPosition(world)};
             world.infected.push_back(inf);
         }
@@ -213,7 +213,7 @@ void respondToKeyPress (World& world, Player& player, int key)
 
             // Spawn new infected if they hear a gunshot.
             if (player.activeWeapon.cartridgeType !=
-                    CARTRIDGE_TYPE::CARTRIDGE_22LR && std::rand() % 26 == 25)
+                    CARTRIDGE_TYPE::CARTRIDGE_22LR && checkProbability(0.04))
             {
                 Infected inf{.coordinates=getInfectedSpawnPosition(world)};
                 world.infected.push_back(inf);

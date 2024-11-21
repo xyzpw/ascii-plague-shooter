@@ -5,12 +5,16 @@
 #include <unistd.h>
 #include <mutex>
 #include <thread>
+#include <random>
 #include "common.h"
 #include <sys/ioctl.h>
 #include <condition_variable>
 #include <chrono>
 #include "math_utils.h"
 #include "gameUtilities.h"
+
+std::mt19937 mtRandGen(std::random_device{}());
+std::uniform_int_distribution<int> uniformIntDist(0, std::numeric_limits<int>::max());
 
 std::mutex audioMutex;
 std::condition_variable audioFinishCondition;
@@ -142,8 +146,8 @@ std::pair<int, int> getRandMapCoordinates(World world)
     std::pair<int, int> colLimits = world.mapColumnLimits;
     std::pair<int, int> rowLimits = world.mapRowLimits;
 
-    int col = std::rand() % (colLimits.second - colLimits.first + 1) + colLimits.first;
-    int row = std::rand() % (rowLimits.second - rowLimits.first + 1) + rowLimits.first;
+    int col = randIntInRange(colLimits.first, colLimits.second);
+    int row = randIntInRange(rowLimits.first, rowLimits.second);
     return std::make_pair(col, row);
 }
 
@@ -153,6 +157,38 @@ int getEpochMs()
         std::chrono::system_clock::now().time_since_epoch());
     time_t ms = msObj.count();
     return ms;
+}
+
+int randInt()
+{
+    return uniformIntDist(mtRandGen);
+}
+
+int randIntInRange(int min, int max)
+{
+    if (min > max)
+        std::swap(min, max);
+
+    int range = max - min + 1;
+
+    int nMax = std::numeric_limits<int>::max() / range;
+
+    int result;
+    do {
+        result = randInt();
+    } while (result >= nMax * range);
+    return result % range + min;
+}
+
+/*
+ Generates a random number from 0 to 1 and returns true if it is less than
+ or equal to the specified probability.
+*/
+bool checkProbability(double p)
+{
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    double rProb = dist(mtRandGen);
+    return rProb <= p;
 }
 
 void playAudio(std::string filename)

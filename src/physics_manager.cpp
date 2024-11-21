@@ -20,8 +20,8 @@ void processGrenadeThrow(World& world, Explosive grenade)
             }
         return index;
     };
-    int throwVelocity = std::rand() % (20 - 15 + 1) + 15;
-    int throwAngleDegrees = std::rand() % (50 - 40 + 1) + 40;
+    int throwVelocity = randIntInRange(15, 20);
+    int throwAngleDegrees = randIntInRange(40, 50);
     int throwDistance = computeThrownObjectRange(
         throwVelocity, throwAngleDegrees);
 

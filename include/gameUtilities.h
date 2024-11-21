@@ -24,3 +24,6 @@ std::vector<std::pair<int,int>> getThrowPathCoordinates(
 bool checkCoordinatesInsideMap(World world, std::pair<int, int> coordinates);
 std::string makeClockString(time_t seconds);
 std::pair<int, int> getRandMapCoordinates(World world);
+int randInt();
+int randIntInRange(int min, int max);
+bool checkProbability(double);

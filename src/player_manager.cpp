@@ -225,7 +225,7 @@ std::optional<Explosive> Player::throwGrenade(World& world)
         if (explosive->explosiveType == EXPLOSIVE_TYPE::M67_GRENADE)
         {
             grenade = *explosive;
-            grenade->_explosiveId = std::rand();
+            grenade->_explosiveId = randInt();
             grenade->facingDirection = facingDirection;
             grenade->coordinates = coordinates;
 
@@ -258,7 +258,7 @@ void Player::plantClaymore(World& world)
             ++cl;
     }
 
-    claymore._explosiveId = std::rand();
+    claymore._explosiveId = randInt();
     claymore.facingDirection = facingDirection;
 
     if (facingDirection == NORTH || facingDirection == SOUTH){

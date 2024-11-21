@@ -2,6 +2,7 @@
 #include <utility>
 #include <unistd.h>
 #include "common.h"
+#include "gameUtilities.h"
 
 Firearm::Firearm(FIREARM_TYPE type)
 {
@@ -74,7 +75,7 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
     {
         case EXPLOSIVE_TYPE::M67_GRENADE:
             explosionPascals = 962e3;
-            explosionDelay = (std::rand() % (55 - 40 + 1) + 40) / 10.0;
+            explosionDelay = randIntInRange(40, 55) / 10.0;
             explodeAudioFile = "explosion_with_debris.wav";
             explodeCloseAudioFile = "explosion_close.wav";
             explosiveChar = "\u2022";

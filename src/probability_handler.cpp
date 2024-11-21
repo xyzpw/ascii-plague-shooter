@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "common.h"
 #include "math_utils.h"
+#include "gameUtilities.h"
 
 // Probability of bullet wound being lethal.
 double computeDeathProbability(HIT_LOCATION location, int joules)
@@ -63,17 +64,15 @@ double computeFragmentLethalProb(int joules, int fragments)
 
 HIT_LOCATION getHitLocation(bool isPointBlank)
 {
-    double randProbability = static_cast<double>(std::rand()) / RAND_MAX;
-
     double pHead = isPointBlank ? 0.33 : 0.1;
     double pThorax = isPointBlank ? 0.33 : 0.35;
     double pAbdomen = isPointBlank ? 0.33 : 0.5;
 
-    if (randProbability <= pHead)
+    if (checkProbability(pHead))
         return HIT_LOCATION::HEAD;
-    else if (randProbability <= pHead + pThorax)
+    else if (checkProbability(pHead + pThorax))
         return HIT_LOCATION::THORAX;
-    else if (randProbability <= pHead + pThorax + pAbdomen)
+    else if (checkProbability(pHead + pThorax + pAbdomen))
         return HIT_LOCATION::ABDOMEN;
     return HIT_LOCATION::LIMBS;
 }

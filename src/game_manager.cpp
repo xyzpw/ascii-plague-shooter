@@ -23,8 +23,8 @@ World::World()
 
 SupplyDrop::SupplyDrop(std::pair<int, int> colRange, std::pair<int, int> rowRange)
 {
-    int col = std::rand() % (colRange.second - colRange.first + 1) + colRange.first;
-    int row = std::rand() % (rowRange.second - rowRange.first + 1) + rowRange.first;
+    int col = randIntInRange(colRange.first, colRange.second);
+    int row = randIntInRange(rowRange.first, rowRange.second);
     coordinates = std::make_pair(col, row);
 }
 
@@ -41,17 +41,18 @@ void World::dropSupplies()
             availableFirearmTypes.push_back(type);
     }
 
-    Firearm firearm(
-            availableFirearmTypes.at(std::rand() % availableFirearmTypes.size()));
+    Firearm firearm(availableFirearmTypes.at(
+        randIntInRange(0, availableFirearmTypes.size() - 1)
+    ));
     std::optional<Magazine> magazine;
     int magCount = 0;
 
     switch (firearm.firearmType){
         case FIREARM_TYPE::GLOCK_17:{
-            bool isDoubleStackMag = std::rand() % 2;
+            bool isDoubleStackMag = randIntInRange(0, 1);
             int rounds = isDoubleStackMag ? 17 : 10;
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_9MM, rounds, rounds);
-            magazine->isHollowPoint = std::rand()%5 + 1 <= 2;
+            magazine->isHollowPoint = checkProbability(0.4);
 
             firearm.magazine = magazine.value();
             firearm.loadedRounds = firearm.magazine.cartridgeCount;
@@ -61,7 +62,7 @@ void World::dropSupplies()
         }
         case FIREARM_TYPE::AR15:
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON, 20, 20);
-            magazine->isHollowPoint = std::rand() % 10 == 9;
+            magazine->isHollowPoint = checkProbability(0.1);
             if (magazine->isHollowPoint)
                 magazine->kineticEnergy = 1300;
 
@@ -96,10 +97,10 @@ void World::dropSupplies()
             drop.items.magazines.push_back(magazine.value());
     }
 
-    for (int i = 0; i < std::rand() % 3 + 2; ++i)
+    for (int i = 0; i < randIntInRange(2, 4); ++i)
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M67_GRENADE));
     nextDropTime += drop.items.explosives.size() * 4.5;
-    if (std::rand() % 2){
+    if (randIntInRange(0, 1)){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE));
         nextDropTime += 11;
     }
@@ -136,8 +137,8 @@ std::vector<std::pair<int,int>> getSplatterCoordinates(
             addFromCurrentPos(direction == EAST ? 2 : -2, 1);
         }
         else{
-            addFromCurrentPos(std::rand()%2 + 1, direction == NORTH ? -2 : 2);
-            addFromCurrentPos(0 - (std::rand()%2 + 1),
+            addFromCurrentPos(randIntInRange(1, 2), direction == NORTH ? -2 : 2);
+            addFromCurrentPos(0 - (randIntInRange(1, 2)),
                     direction == NORTH ? -2 : 2);
         }
     };

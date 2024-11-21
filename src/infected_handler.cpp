@@ -19,7 +19,7 @@ bool checkShouldDelayedDeath(HIT_LOCATION location, bool isHollowPoint);
 std::pair<int, int> getInfectedSpawnPosition(World world)
 {
     int colRange = world.mapColumnLimits.second - world.mapColumnLimits.first;
-    int col = std::rand() % (colRange+1) + world.mapColumnLimits.first;
+    int col = randIntInRange(0, colRange) + world.mapColumnLimits.first;
     return std::make_pair(col, world.mapRowLimits.first);
 }
 
@@ -32,7 +32,7 @@ void updateInfectedPositions(World& world, Player& player)
     {
         if (!inf.alive || inf.coordinates == player.coordinates)
             continue;
-        if (inf.isHindered && std::rand() % 4 == 3)
+        if (inf.isHindered && checkProbability(0.25))
             continue;
         if (inf.delayedDeathHitTime.has_value())
         {
@@ -71,7 +71,7 @@ void handleFirearmShot(World& world, Player& player)
             return false;
         else if (location == HIT_LOCATION::HEAD && mag.isHollowPoint)
             return true;
-        return std::rand() % 50 + 1 <= (mag.isHollowPoint ? 2 : 1);
+        return checkProbability(mag.isHollowPoint ? 0.04 : 0.02);
     };
 
     auto checkBulletHit = [&](int distance){
@@ -82,7 +82,7 @@ void handleFirearmShot(World& world, Player& player)
             pointBlank = true;
             return true;
         }
-        return static_cast<double>(std::rand()) / RAND_MAX <= pHit;
+        return checkProbability(pHit);
     };
 
     int playerCol = player.coordinates.first, playerRow = player.coordinates.second;
@@ -214,9 +214,9 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
         int energy = kineticEnergy - energyLossPerMeter * distance;
         double explosionLethalProb = computeExplosionLethalProb(pascals);
         double fragmentLethalProb = computeFragmentLethalProb(energy, fragments);
-        bool wasFatal = static_cast<double>(std::rand()) / RAND_MAX <= explosionLethalProb;
+        bool wasFatal = checkProbability(explosionLethalProb);
         if (!wasFatal)
-            wasFatal = static_cast<double>(std::rand()) / RAND_MAX <= fragmentLethalProb;
+            wasFatal = checkProbability(fragmentLethalProb);
         return wasFatal;
     };
 
@@ -311,8 +311,8 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         bool p = computeFragmentLethalProb(energy, fragments);
         bool pEx = computeExplosionLethalProb(
             computeInverseSquareLaw(explosionPascals, distance));
-        bool fragmentsLethal = static_cast<double>(std::rand()) / RAND_MAX <= p;
-        bool explosionLethal = static_cast<double>(std::rand()) / RAND_MAX <= pEx;
+        bool fragmentsLethal = checkProbability(p);
+        bool explosionLethal = checkProbability(pEx);
         return fragmentsLethal || explosionLethal;
     };
 
@@ -329,7 +329,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         explosionPascals, getMapPointsDistance(
             player.coordinates, claymorePosition));
     double isCloseProb = computeEardrumRuptureProb(pascalsAtPlayer);
-    bool isClose = static_cast<double>(std::rand()) / RAND_MAX <= isCloseProb;
+    bool isClose = checkProbability(isCloseProb);
 
     std::thread(playAudio, isClose ? explosive.explodeCloseAudioFile : explosive.explodeAudioFile).detach();
     for (auto ex = world.activeExplosives.begin(); ex != world.activeExplosives.end();)
@@ -362,7 +362,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
 bool checkBulletWasFatal(const HIT_LOCATION location, const int joules)
 {
     double pFatal = computeDeathProbability(location, joules);
-    bool wasFatal = static_cast<double>(std::rand()) / RAND_MAX < pFatal;
+    bool wasFatal = checkProbability(pFatal);
     return wasFatal;
 }
 
@@ -374,10 +374,10 @@ int getDelayedDeathTime(HIT_LOCATION location)
             return 0;
         }
         case HIT_LOCATION::THORAX:{
-            return std::rand() % 9 + 2;
+            return randIntInRange(2, 10);
         }
         case HIT_LOCATION::ABDOMEN:{
-            return std::rand() % 22 + 5;
+            return randIntInRange(5, 26);
         }
         default: {
             return 85 / 2;
@@ -387,29 +387,27 @@ int getDelayedDeathTime(HIT_LOCATION location)
 
 bool checkShouldDelayedDeath(HIT_LOCATION location, bool isHollowPoint)
 {
-    int rNum = std::rand() % 100 + 1;
     switch (location){
         case HIT_LOCATION::HEAD:
-            return rNum <= 0.9;
+            return checkProbability(0.9);
         case HIT_LOCATION::THORAX:
-            return rNum <= isHollowPoint ? 88 : 50;
+            return checkProbability(isHollowPoint ? 0.88 : 0.5);
         case HIT_LOCATION::ABDOMEN:
-            return rNum <= isHollowPoint ? 60 : 20;
+            return checkProbability(isHollowPoint ? 0.6 : 0.2);
         default:
-            return rNum <= isHollowPoint ? 30 : 10;
+            return checkProbability(isHollowPoint ? 0.3 : 0.1);
     }
 }
 
 bool checkIsHindered(HIT_LOCATION location)
 {
-    int randNum = std::rand() % 100 + 1;
     switch (location){
         case HIT_LOCATION::HEAD:
             return 1;
         case HIT_LOCATION::ABDOMEN:
-            return randNum <= 50;
+            return checkProbability(0.5);
         case HIT_LOCATION::LIMBS:
-            return randNum <= 50;
+            return checkProbability(0.5);
         default:
             return 0;
     }
