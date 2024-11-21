@@ -23,13 +23,11 @@ Firearm::Firearm(FIREARM_TYPE type)
             break;
         }
         case FIREARM_TYPE::AR15: {
-            bulletKineticEnergy = 1695;
-            bulletKineticEnergyLossPerMeter = 4.4;
             reloadTime = 2.5;
             fastReloadTime = 1;
             chamberReloadDelay = 0.2;
             name = "AR15";
-            shootAudioFile = "ar15_shoot.wav";
+            shootAudioFile = "223_remington.wav";
             shootIntervalMs = 250;
             accuracyDecay = 0.016;
             accuracyScaleFactor = 1.27;
@@ -39,13 +37,11 @@ Firearm::Firearm(FIREARM_TYPE type)
             break;
         }
         case FIREARM_TYPE::BOLT_ACTION_RIFLE:{
-            bulletKineticEnergy = 3894;
-            bulletKineticEnergyLossPerMeter = 6.32;
             reloadTime = 3;
             fastReloadTime = 1.5;
             chamberReloadDelay = 1;
             name = "Remington 700";
-            shootAudioFile = "bolt_action_rifle_shoot.wav";
+            shootAudioFile = "30_06.wav";
             shootIntervalMs = 1000;
             accuracyDecay = 0.005;
             accuracyScaleFactor = 1.32;
@@ -55,8 +51,6 @@ Firearm::Firearm(FIREARM_TYPE type)
             break;
         }
         case FIREARM_TYPE::RUGER_MK_IV:{
-            bulletKineticEnergy = 178;
-            bulletKineticEnergyLossPerMeter = 0.63;
             reloadTime = 1.75;
             fastReloadTime = 0.5;
             chamberReloadDelay = 0.1;

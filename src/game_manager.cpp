@@ -91,7 +91,7 @@ void World::dropSupplies()
 
     drop.items.firearms.push_back(firearm);
     if (magazine.has_value()){
-        nextDropTime += magCount * magazine->cartridgeCount / 10;
+        nextDropTime += magCount * magazine->cartridgeCount / 20;
         for (int i = 0; i < magCount; ++i)
             drop.items.magazines.push_back(magazine.value());
     }

@@ -46,11 +46,6 @@ enum class EXPLOSIVE_TYPE{
     __COUNT,
 };
 
-enum class PICKUP_TYPE{
-    FIREARM,
-    EXPLOSIVE,
-};
-
 struct SplatterEffect{
     std::vector<std::pair<int,int>> coordinates;
     const char* splatterChar = "*";
@@ -115,7 +110,6 @@ struct Firearm{
     CARTRIDGE_TYPE cartridgeType;
     Magazine magazine;
     int loadedRounds;
-    int _defaultMagEquipCount = 0; // Number of mags equipped from supply drops
     Firearm(FIREARM_TYPE type);
 };
 
@@ -170,6 +164,7 @@ struct Infected{
     std::optional<int> delayedDeathDuration;
     std::optional<time_t> timeOfDeath; // Epoch at which the infected has died.
     std::optional<SplatterEffect> deathSplatter;
+    void markAsDead();
 };
 
 struct World{

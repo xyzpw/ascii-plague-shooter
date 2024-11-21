@@ -32,15 +32,17 @@ void updateInfectedPositions(World& world, Player& player)
     {
         if (!inf.alive || inf.coordinates == player.coordinates)
             continue;
-        else if (inf.isHindered && std::rand() % 4 == 3)
+        if (inf.isHindered && std::rand() % 4 == 3)
             continue;
-        else if (inf.delayedDeathHitTime.has_value() &&
-                inf.delayedDeathDuration.value() <= std::time(0) - inf.delayedDeathHitTime.value()){
-            inf.alive = false;
-            inf.infectedChar = "D";
-            inf.timeOfDeath = std::time(0);
-            ++player.killCount;
-            continue;
+        if (inf.delayedDeathHitTime.has_value())
+        {
+            bool isDead = inf.delayedDeathDuration.value() <=
+                    std::time(0) - inf.delayedDeathHitTime.value();
+            if (isDead){
+                inf.markAsDead();
+                ++player.killCount;
+                continue;
+            }
         }
 
         int deltaCol = player.coordinates.first - inf.coordinates.first;
@@ -135,9 +137,7 @@ void handleFirearmShot(World& world, Player& player)
                         checkBulletWasFatal(hitLocation, keDamage);
 
                 if (wasFatal){
-                    inf.alive = false;
-                    inf.timeOfDeath = std::time(0);
-                    inf.infectedChar = "D";
+                    inf.markAsDead();
                     ++player.killCount;
                 }
                 else if (checkIsHindered(hitLocation))
@@ -249,9 +249,7 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
         );
 
         if (checkWasFatal(distance)){
-            inf.alive = false;
-            inf.timeOfDeath = std::time(0);
-            inf.infectedChar = "D";
+            inf.markAsDead();
             ++player.killCount;
             continue;
         }
@@ -348,9 +346,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     {
         if (checkFatal(inf.coordinates))
         {
-            inf.alive = false;
-            inf.infectedChar = "D";
-            inf.timeOfDeath = std::time(0);
+            inf.markAsDead();
             ++player.killCount;
             continue;
         }
