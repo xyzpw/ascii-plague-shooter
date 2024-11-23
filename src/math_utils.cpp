@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 #include "math_utils.h"
 
@@ -50,6 +49,6 @@ double computeThrownObjectRange(int velocity, int degrees)
 {
     double radians = degrees * PI / 180.0;
     double range = std::pow(velocity, 2) * std::sin(radians * 2) /
-            GRAVITY_ACCELERATION;
+                   GRAVITY_ACCELERATION;
     return range;
 }

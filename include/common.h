@@ -1,12 +1,18 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
 #include <ctime>
 #include <unordered_map>
 #include <optional>
+
+// Amount of energy required to be lethal.
+#define MINIMUM_LETHAL_ENERGY 79
+
+// Fraction of bullet's energy remains after penetrating enemy.
+#define PENETRATE_KE_FACTOR 0.8
+#define PENETRATE_KE_FACTOR_HP 0.1
 
 struct World;
 
@@ -102,8 +108,6 @@ struct Firearm{
     double chamberReloadDelay;
     int shootIntervalMs;
     double isReloading = false;
-    int bulletKineticEnergy;
-    double bulletKineticEnergyLossPerMeter; // Kinetic energy of bullet lost per meter
     std::string shootAudioFile = "";
     double accuracyDecay;
     double accuracyScaleFactor;
@@ -177,7 +181,10 @@ struct World{
     std::vector<SupplyDrop> supplyDrops{};
     std::vector<Explosive> activeExplosives{};
     int latestInfectedPositionUpdate;
-    int infectedPositionUpdateMs = 200; // How often infected positions are updated in ms.
+
+    // How often infected positions are updated in ms.
+    int infectedPositionUpdateMs = 200;
+
     time_t nextSupplyDropEpoch;
     Rescue rescue;
     void dropSupplies();
@@ -190,7 +197,7 @@ void playGame(World world); // Implemented in "screen_manager.cpp"
 double computeDeathProbability(HIT_LOCATION location, int joules);
 
 // Implemented in "player_manager.cpp"
-std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(Inventory inventory);
+std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(Inventory);
 
 // Implemented in "probability_handler.cpp"
 HIT_LOCATION getHitLocation(bool isPointBlank);
@@ -199,3 +206,5 @@ std::vector<std::pair<int, int>> getSplatterCoordinates(
     const std::pair<int,int> startCoord, const HIT_LOCATION hitLocation,
     const Magazine magUsed, const DIRECTION direction
 );
+
+int getClaymoreFragmentCountAtPos(Explosive, std::pair<int, int>);

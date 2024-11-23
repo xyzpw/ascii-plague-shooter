@@ -1,17 +1,17 @@
-#include <iostream>
 #include <string>
 #include <thread>
 #include <unistd.h>
 #include <algorithm>
 #include <unordered_map>
 #include <optional>
+#include <unordered_set>
 #include "common.h"
 #include "math_utils.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 #include "physics_manager.h"
 
 bool checkHasMag(Inventory inventory, CARTRIDGE_TYPE cartridge);
-std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(Inventory inventory);
+std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(Inventory);
 int checkMagCount(Inventory inventory, CARTRIDGE_TYPE cartridge);
 bool checkHasFirearm(Inventory inventory, FIREARM_TYPE type);
 
@@ -33,12 +33,14 @@ void Player::updateHudText()
         Magazine& mag = activeWeapon.magazine;
         double bulletFrac = mag.cartridgeCount / static_cast<double>(mag.capacity);
         int charCount = bulletFrac * maxLength;
-        if (charCount == 0 && activeWeapon.loadedRounds > 0)
+        if (charCount == 0 && activeWeapon.loadedRounds > 0){
             charCount = 1;
+        }
         std::string str = std::string("[") + std::string(charCount, '|');
         str += std::string(maxLength - charCount, ' ') + "]";
-        if (mag.isHollowPoint)
+        if (mag.isHollowPoint){
             str += " HP";
+        }
         return str;
     };
 
@@ -50,32 +52,40 @@ void Player::updateHudText()
             {
                 double carCount = mag.cartridgeCount;
                 double carCapacity = mag.capacity;
-                double magDecimal = static_cast<double>(carCount) / static_cast<double>(carCapacity);
-                for (auto frac : magazineAscii)
+                double magDecimal = static_cast<double>(carCount) /
+                                    static_cast<double>(carCapacity);
+                for (auto frac : magazineAscii){
                     if (magDecimal >= frac.first){
                         str += frac.second + " ";
                         break;
                     }
+                }
             }
         }
         return str;
     };
-    bool displayMags = checkHasMag(inventory, activeWeapon.magazine.cartridgeType);
+    bool displayMags = checkHasMag(
+        inventory, activeWeapon.magazine.cartridgeType
+    );
     bool displayNoAmmo = !displayMags && activeWeapon.loadedRounds < 1;
     bool displayRounds = activeWeapon.loadedRounds >= 1;
 
     hudText = std::string("Active firearm: ") + activeWeapon.name;
 
-    if (isReloading)
+    if (isReloading){
         hudText += " (reloading...)";
+    }
 
-    if (displayNoAmmo)
+    if (displayNoAmmo){
         hudText += " (no ammo)";
-    else
+    }
+    else{
         hudText += " " + makeBulletsString();
+    }
 
-    if (displayMags)
+    if (displayMags){
         hudText += " / " + makeMagString();
+    }
 
     auto explosiveInvSize = checkExplosiveInventorySize(inventory);
     int m67Count =
@@ -85,8 +95,9 @@ void Player::updateHudText()
     int claymoreCount = explosiveInvSize.count(EXPLOSIVE_TYPE::M18A1_CLAYMORE) ?
             explosiveInvSize.at(EXPLOSIVE_TYPE::M18A1_CLAYMORE) : 0;
 
-    if (m67Count)
+    if (m67Count){
         hudText += "\nm67 grenades: " + std::to_string(m67Count);
+    }
     if (claymoreCount){
         hudText += m67Count > 0 ? ", " : "\n";
         hudText += "claymores: " + std::to_string(claymoreCount);
@@ -100,18 +111,21 @@ void Player::fixWeaponAppearance()
     weaponChar = isVert ? "|" : "\u2015";
     if (isVert){
         int rowIncrease = facingDirection == NORTH ? -1 : 1;
-        weaponCoordinates = std::make_pair(coordinates.first, coordinates.second + rowIncrease);
+        weaponCoordinates = std::make_pair(
+                            coordinates.first, coordinates.second + rowIncrease);
     }
     else{
         int colIncrease = facingDirection == WEST ? -1 : 1;
-        weaponCoordinates = std::make_pair(coordinates.first + colIncrease, coordinates.second);
+        weaponCoordinates = std::make_pair(
+                            coordinates.first + colIncrease, coordinates.second);
     }
 }
 
 void Player::shootFirearm()
 {
-    if (!activeWeapon.canShoot || activeWeapon.isReloading)
+    if (!activeWeapon.canShoot || activeWeapon.isReloading){
         return;
+    }
     canSwitchFirearm = false;
     activeWeapon.canShoot = false;
 
@@ -132,8 +146,9 @@ void Player::shootFirearm()
 void Player::reloadFirearm()
 {
     bool hasMag = checkHasMag(inventory, activeWeapon.magazine.cartridgeType);
-    if (isReloading || !hasMag)
+    if (isReloading || !hasMag){
         return;
+    }
 
     activeWeapon.canShoot = false;
     isReloading = true;
@@ -149,7 +164,9 @@ void Player::reloadFirearm()
 
     usleep(activeWeapon.reloadTime * 1e6);
 
-    std::sort(inventory.magazines.begin(), inventory.magazines.end(), [&](Magazine a, Magazine b){
+    std::sort(inventory.magazines.begin(), inventory.magazines.end(),
+              [&](Magazine a, Magazine b)
+    {
         return a.cartridgeCount > b.cartridgeCount;
     });
     for (auto mag = inventory.magazines.begin(); mag != inventory.magazines.end();)
@@ -165,7 +182,9 @@ void Player::reloadFirearm()
     }
 
     inventory.magazines.push_back(currentMag);
-    std::sort(inventory.magazines.begin(), inventory.magazines.end(), [&](Magazine a, Magazine b){
+    std::sort(inventory.magazines.begin(), inventory.magazines.end(),
+              [&](Magazine a, Magazine b)
+    {
         return a.cartridgeCount > b.cartridgeCount;
     });
     activeWeapon.canShoot = true;
@@ -176,8 +195,9 @@ void Player::reloadFirearm()
 void Player::fastReloadFirearm()
 {
     bool hasMag = checkHasMag(inventory, activeWeapon.magazine.cartridgeType);
-    if (isReloading || !hasMag)
+    if (isReloading || !hasMag){
         return;
+    }
 
     activeWeapon.canShoot = false;
     isReloading = true;
@@ -188,7 +208,9 @@ void Player::fastReloadFirearm()
     usleep(activeWeapon.fastReloadTime * 1e6);
 
 
-    std::sort(inventory.magazines.begin(), inventory.magazines.end(), [&](Magazine a, Magazine b){
+    std::sort(inventory.magazines.begin(), inventory.magazines.end(),
+              [&](Magazine a, Magazine b)
+    {
         return a.cartridgeCount > b.cartridgeCount;
     });
 
@@ -215,12 +237,14 @@ void Player::fastReloadFirearm()
 
 std::optional<Explosive> Player::throwGrenade(World& world)
 {
-    if (isReloading)
+    if (isReloading){
         return std::nullopt;
+    }
 
     // Remove grenade from inventory and throw it.
     std::optional<Explosive> grenade;
-    for (auto explosive = inventory.explosives.begin(); explosive != inventory.explosives.end(); ++explosive)
+    for (auto explosive = inventory.explosives.begin();
+         explosive != inventory.explosives.end(); ++explosive)
     {
         if (explosive->explosiveType == EXPLOSIVE_TYPE::M67_GRENADE)
         {
@@ -234,8 +258,9 @@ std::optional<Explosive> Player::throwGrenade(World& world)
         }
     }
 
-    if (!grenade.has_value())
+    if (!grenade.has_value()){
         return std::nullopt;
+    }
 
     return grenade;
 }
@@ -243,9 +268,13 @@ std::optional<Explosive> Player::throwGrenade(World& world)
 
 void Player::plantClaymore(World& world)
 {
-    bool hasClaymore = checkExplosiveInventorySize(inventory).count(EXPLOSIVE_TYPE::M18A1_CLAYMORE);
-    if (isReloading || !hasClaymore)
+    bool hasClaymore =
+         checkExplosiveInventorySize(inventory)
+            .count(EXPLOSIVE_TYPE::M18A1_CLAYMORE);
+
+    if (isReloading || !hasClaymore){
         return;
+    }
     Explosive claymore(EXPLOSIVE_TYPE::M18A1_CLAYMORE);
 
     for (auto cl = inventory.explosives.begin(); cl != inventory.explosives.end();)
@@ -263,14 +292,28 @@ void Player::plantClaymore(World& world)
 
     if (facingDirection == NORTH || facingDirection == SOUTH){
         claymore.explosiveChar = facingDirection == SOUTH ? "^" : "V";
+
         int rowIncrease = facingDirection == SOUTH ? +1 : -1;
-        int newRow = std::clamp(rowIncrease + coordinates.second, world.mapRowLimits.first, world.mapRowLimits.second);
+
+        int newRow = std::clamp(
+            rowIncrease + coordinates.second,
+            world.mapRowLimits.first,
+            world.mapRowLimits.second
+        );
+
         claymore.coordinates = std::make_pair(coordinates.first, newRow);
     }
     else{
         claymore.explosiveChar = facingDirection == EAST ? "<" : ">";
+
         int colIncrease = facingDirection == EAST ? +1 : -1;
-        int newCol = std::clamp(colIncrease + coordinates.first, world.mapColumnLimits.first, world.mapColumnLimits.second);
+
+        int newCol = std::clamp(
+            colIncrease + coordinates.first,
+            world.mapColumnLimits.first,
+            world.mapColumnLimits.second
+        );
+
         claymore.coordinates = std::make_pair(newCol, coordinates.second);
     }
 
@@ -280,13 +323,16 @@ void Player::plantClaymore(World& world)
 
 void Player::pickupItem(World& world)
 {
-    if (isReloading)
+    if (isReloading){
         return;
+    }
 
-    for (auto drop = world.supplyDrops.begin(); drop != world.supplyDrops.end(); ++drop)
+    for (auto drop = world.supplyDrops.begin(); drop != world.supplyDrops.end();
+         ++drop)
     {
-        if (getMapPointsDistance(coordinates, drop->coordinates) > 2)
+        if (getMapPointsDistance(coordinates, drop->coordinates) > 2){
             continue;
+        }
 
         for (auto item : drop->items.firearms)
         {
@@ -297,13 +343,20 @@ void Player::pickupItem(World& world)
                 continue;
             }
             inventory.firearms.push_back(item);
-            if (!activeWeapon.loadedRounds && !checkHasMag(inventory, activeWeapon.magazine.cartridgeType))
+            if (!activeWeapon.loadedRounds &&
+                !checkHasMag(inventory, activeWeapon.magazine.cartridgeType))
+            {
                 switchFirearm();
+            }
         }
-        for (auto item : drop->items.explosives)
+
+        for (auto item : drop->items.explosives){
             inventory.explosives.push_back(item);
-        for (auto item : drop->items.magazines)
+        }
+        for (auto item : drop->items.magazines){
             inventory.magazines.push_back(item);
+        }
+
         world.supplyDrops.erase(drop);
         break;
     }
@@ -311,77 +364,102 @@ void Player::pickupItem(World& world)
 
 void Player::switchFirearm()
 {
-    if (inventory.firearms.size() == 0 || activeWeapon.isReloading || !canSwitchFirearm)
+    if (inventory.firearms.size() == 0 || activeWeapon.isReloading ||
+        !canSwitchFirearm)
+    {
         return;
+    }
     FIREARM_TYPE currentType = activeWeapon.firearmType;
     inventory.firearms.push_back(activeWeapon);
-    for (auto it = inventory.firearms.begin(); it != inventory.firearms.end();)
+
+    // Find next firearm in player's inventory.
+    auto it = std::find_if(inventory.firearms.begin(), inventory.firearms.end(),
+                           [&](const Firearm& f)
     {
-        if (it->firearmType != currentType){
-            activeWeapon = *it;
-            inventory.firearms.erase(it);
-            break;
-        }
-        else
-            ++it;
+        return f.firearmType != currentType;
+    });
+
+    // Switch to found firearm if it exists in the player's inventory.
+    if (it != inventory.firearms.end()){
+        activeWeapon = *it;
+        inventory.firearms.erase(it);
     }
 
     // Remove firearms from inventory if no ammo exists.
-    for (auto firearm = inventory.firearms.begin(); firearm != inventory.firearms.end();)
+    for (auto firearm = inventory.firearms.begin();
+         firearm != inventory.firearms.end();)
     {
-        if (firearm->loadedRounds == 0 && !checkHasMag(inventory, firearm->magazine.cartridgeType)){
+        if (firearm->loadedRounds == 0 &&
+            !checkHasMag(inventory, firearm->magazine.cartridgeType))
+        {
             inventory.firearms.erase(firearm);
             break;
         }
-        else
+        else{
             ++firearm;
+        }
     }
 }
 
+/*
+ Check if an inventory contains at least 1 magazine which holds
+ a specified cartridge type.
+*/
 bool checkHasMag(Inventory inventory, CARTRIDGE_TYPE cartridge)
 {
     for (auto mag : inventory.magazines)
     {
-        if (mag.cartridgeType == cartridge)
+        if (mag.cartridgeType == cartridge){
             return true;
+        }
     }
     return false;
 }
 
-std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(Inventory inventory)
+/*
+ Returns an unordered map of explosive type and how many of which are in the
+ specified inventory.
+*/
+std::unordered_map<EXPLOSIVE_TYPE, int> checkExplosiveInventorySize(
+                                        Inventory inventory)
 {
     std::unordered_map<EXPLOSIVE_TYPE, int> explosives{};
-    std::vector<EXPLOSIVE_TYPE> invExplosive{};
-
-    auto appendToMap = [&](EXPLOSIVE_TYPE type){
-        if (std::find(invExplosive.begin(), invExplosive.end(), type) == invExplosive.end()){
-            explosives[type] = 1;
-            invExplosive.push_back(type);
-        }
-        else
-            explosives[type] += 1;
-    };
+    std::unordered_set<EXPLOSIVE_TYPE> invExplosiveSet;
 
     for (auto ex : inventory.explosives)
     {
-        appendToMap(ex.explosiveType);
+        if (invExplosiveSet.find(ex.explosiveType) == invExplosiveSet.end())
+        {
+            explosives[ex.explosiveType] = 1;
+            invExplosiveSet.insert(ex.explosiveType);
+        }
+        else
+        {
+            explosives[ex.explosiveType] += 1;
+        }
     }
     return explosives;
 }
 
+// Check how many magazines which hold a specified cartridge are in an inventory.
 int checkMagCount(Inventory inventory, CARTRIDGE_TYPE cartridge)
 {
     int count = 0;
-    for (auto cart : inventory.magazines)
-        if (cart.cartridgeType == cartridge)
+    for (auto cart : inventory.magazines){
+        if (cart.cartridgeType == cartridge){
             ++count;
+        }
+    }
     return count;
 };
 
+// Check if an inventory contains a specified firearm type.
 bool checkHasFirearm(Inventory inventory, FIREARM_TYPE type)
 {
-    for (auto firearm : inventory.firearms)
-        if (firearm.firearmType == type)
+    for (auto firearm : inventory.firearms){
+        if (firearm.firearmType == type){
             return true;
+        }
+    }
     return 0;
 }

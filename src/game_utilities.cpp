@@ -11,22 +11,28 @@
 #include <condition_variable>
 #include <chrono>
 #include "math_utils.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 
 std::mt19937 mtRandGen(std::random_device{}());
-std::uniform_int_distribution<int> uniformIntDist(0, std::numeric_limits<int>::max());
+
+std::uniform_int_distribution<int> uniformIntDist(
+    0, std::numeric_limits<int>::max()
+);
 
 std::mutex audioMutex;
 std::condition_variable audioFinishCondition;
 bool isAudioPlaying = false;
-void playAudio(std::string filename);
-std::pair<std::pair<int, int>, std::pair<int, int>> getMapLimits(std::pair<int, int> termSize);
 
-double getMapPointsDistance(std::pair<int, int> coord1, std::pair<int, int> coord2)
+double getMapPointsDistance(
+       std::pair<int, int> coord1, std::pair<int, int> coord2)
 {
     int colDistance = std::abs(coord2.first - coord1.first);
     int rowDistance = std::abs(coord2.second - coord1.second);
-    double distance = std::sqrt(std::pow(colDistance, 2) + std::pow(rowDistance, 2));
+
+    double distance = std::sqrt(
+        std::pow(colDistance, 2) + std::pow(rowDistance, 2)
+    );
+
     return distance;
 }
 
@@ -38,16 +44,22 @@ std::vector<std::pair<int,int>> getThrowPathCoordinates(
     int incrementValue = direction == EAST || direction == SOUTH ? +1 : -1;
     bool isVertical = direction == NORTH || direction == SOUTH;
 
-    if (isVertical)
-        for (int i = startCoord.second + incrementValue; i != endCoord.second; i += incrementValue){
+    if (isVertical){
+        for (int i = startCoord.second + incrementValue; i != endCoord.second;
+             i += incrementValue)
+        {
             std::pair<int, int> _c = std::make_pair(startCoord.first, i);
             pathCoords.push_back(_c);
         }
-    else
-        for (int i = startCoord.first + incrementValue; i != endCoord.first; i += incrementValue){
+    }
+    else {
+        for (int i = startCoord.first + incrementValue; i != endCoord.first;
+             i += incrementValue)
+        {
             std::pair<int, int> _c = std::make_pair(i, startCoord.second);
             pathCoords.push_back(_c);
         }
+    }
     return pathCoords;
 }
 
@@ -55,8 +67,10 @@ std::vector<std::pair<int,int>> getThrowPathCoordinates(
 std::optional<std::pair<int,int>> getThrowCoordinates(
         World world, Explosive explosive, int distance)
 {
-    if (!explosive.facingDirection.has_value())
+    if (!explosive.facingDirection.has_value()){
         return std::nullopt;
+    }
+
     auto direction = explosive.facingDirection.value();
     std::optional<std::pair<int,int>> landCoordinates;
     bool isVertical = direction == NORTH || direction == SOUTH;
@@ -80,15 +94,20 @@ int computeCoordinatesChange(
     std::pair<int, int> coord1, std::pair<int, int> coord2, bool horizontal)
 {
     int diff;
-    if (horizontal)
+
+    if (horizontal){
         diff = std::abs(coord1.first - coord2.first);
-    else
+    }
+    else {
         diff = std::abs(coord1.second - coord2.second);
+    }
+
     return diff;
 }
 
 // Returns the limits where characters can be move on the terminal.
-std::pair<std::pair<int, int>, std::pair<int, int>> getMapLimits(std::pair<int, int> termSize)
+std::pair<std::pair<int, int>, std::pair<int, int>> getMapLimits(
+    std::pair<int, int> termSize)
 {
     //NOTE: Column 1 is treated as column 0 with ncurses.
     //NOTE: We want to be 2 spaces from the borders.
@@ -112,10 +131,14 @@ std::pair<std::pair<int, int>, std::pair<int, int>> getMapLimits(std::pair<int, 
 
 bool checkCoordinatesInsideMap(World world, std::pair<int, int> coordinates)
 {
-    if (coordinates.first < world.mapColumnLimits.first || coordinates.first > world.mapColumnLimits.second)
+    bool colTooLow = coordinates.first < world.mapColumnLimits.first;
+    bool colTooHigh = coordinates.first > world.mapColumnLimits.second;
+    bool rowTooLow = coordinates.second < world.mapRowLimits.first;
+    bool rowTooHigh = coordinates.second > world.mapRowLimits.second;
+
+    if (colTooLow || colTooHigh || rowTooLow || rowTooHigh)
         return false;
-    else if (coordinates.second < world.mapRowLimits.first || coordinates.second > world.mapRowLimits.second)
-        return false;
+
     return true;
 }
 
@@ -130,8 +153,10 @@ std::pair<int, int> getTerminalSize()
 std::string makeClockString(time_t seconds)
 {
     auto fillClock = [](int num){
-        if (num < 10)
+        if (num < 10){
             return "0" + std::to_string(num);
+        }
+
         return std::to_string(num);
     };
 
@@ -166,8 +191,9 @@ int randInt()
 
 int randIntInRange(int min, int max)
 {
-    if (min > max)
+    if (min > max){
         std::swap(min, max);
+    }
 
     int range = max - min + 1;
 
@@ -193,8 +219,10 @@ bool checkProbability(double p)
 
 void playAudio(std::string filename)
 {
-    if (filename == "")
+    if (filename == ""){
         return;
+    }
+
     {
         std::lock_guard<std::mutex> lock(audioMutex);
         isAudioPlaying = true;

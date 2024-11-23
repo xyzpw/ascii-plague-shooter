@@ -1,8 +1,14 @@
-#include <iostream>
-#include <utility>
-#include <unistd.h>
 #include "common.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
+
+constexpr int BULLET_KE_9MM = 494;
+constexpr int BULLET_KE_223_REMINGTON = 1738;
+constexpr int BULLET_KE_30_06 = 3894;
+constexpr int BULLET_KE_22LR = 178;
+constexpr double BULLET_KE_LOSS_9MM = 1.4;
+constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.4;
+constexpr double BULLET_KE_LOSS_30_06 = 6.32;
+constexpr double BULLET_KE_LOSS_22LR = 0.63;
 
 Firearm::Firearm(FIREARM_TYPE type)
 {
@@ -68,34 +74,6 @@ Firearm::Firearm(FIREARM_TYPE type)
     }
 }
 
-Explosive::Explosive(EXPLOSIVE_TYPE type)
-{
-    explosiveType = type;
-    switch (type)
-    {
-        case EXPLOSIVE_TYPE::M67_GRENADE:
-            explosionPascals = 962e3;
-            explosionDelay = randIntInRange(40, 55) / 10.0;
-            explodeAudioFile = "explosion_with_debris.wav";
-            explodeCloseAudioFile = "explosion_close.wav";
-            explosiveChar = "\u2022";
-            fragmentCount = 1300;
-            fragmentKineticEnergy = 105;
-            fragmentKineticEnergyLossPerMeter = 0.47;
-            break;
-        case EXPLOSIVE_TYPE::M18A1_CLAYMORE:
-            explosionPascals = 4556e3;
-            explosionDelay = 1;
-            explodeAudioFile = "explosion.wav";
-            explodeCloseAudioFile = "explosion_close.wav";
-            explosiveChar = "<";
-            fragmentCount = 700;
-            fragmentKineticEnergy = 467;
-            fragmentKineticEnergyLossPerMeter = 2.2;
-            break;
-    }
-}
-
 Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
 {
     this->cartridgeType = cartridge;
@@ -104,20 +82,20 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
 
     switch (cartridge){
         case CARTRIDGE_TYPE::CARTRIDGE_9MM:
-            this->kineticEnergy = 494;
-            this->kineticEnergyLossPerMeter = 1.4;
+            this->kineticEnergy = BULLET_KE_9MM;
+            this->kineticEnergyLossPerMeter = BULLET_KE_LOSS_9MM;
             break;
         case CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON:
-            this->kineticEnergy = 1738;
-            this->kineticEnergyLossPerMeter = 4.4;
+            this->kineticEnergy = BULLET_KE_223_REMINGTON;
+            this->kineticEnergyLossPerMeter = BULLET_KE_LOSS_223_REMINGTON;
             break;
         case CARTRIDGE_TYPE::CARTRIDGE_30_06:
-            this->kineticEnergy = 3894;
-            this->kineticEnergyLossPerMeter = 6.32;
+            this->kineticEnergy = BULLET_KE_30_06;
+            this->kineticEnergyLossPerMeter = BULLET_KE_LOSS_30_06;
             break;
         case CARTRIDGE_TYPE::CARTRIDGE_22LR:
-            this->kineticEnergy = 178;
-            this->kineticEnergyLossPerMeter = 0.63;
+            this->kineticEnergy = BULLET_KE_22LR;
+            this->kineticEnergyLossPerMeter = BULLET_KE_LOSS_22LR;
             break;
     }
 }

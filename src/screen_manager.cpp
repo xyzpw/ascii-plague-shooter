@@ -1,14 +1,12 @@
-#include <iostream>
 #include <string>
 #include <ncurses.h>
 #include <utility>
 #include <vector>
-#include <unistd.h>
 #include <thread>
 #include <ctime>
 #include <sstream>
 #include "common.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 #include "physics_manager.h"
 #include "infected_handler.h"
 
@@ -63,22 +61,33 @@ void playGame(World world)
     auto clearMap = [&](){
         auto colLimits = world.mapColumnLimits;
         auto rowLimits = world.mapRowLimits;
-        for (int row = rowLimits.first - 1; row <= rowLimits.second + 1; ++row)
-            for (int col = colLimits.first - 1; col <= colLimits.second + 1; ++col){
+        for (int row = rowLimits.first - 1; row <= rowLimits.second + 1; ++row){
+            for (int col = colLimits.first - 1; col <= colLimits.second + 1;
+                    ++col)
+            {
                 move(row, col);
                 printw(" ");
             }
+        }
     };
 
     auto drawPlayer = [&](Player player){
-        mvprintw(player.coordinates.second, player.coordinates.first, player.playerChar);
-        mvprintw(player.weaponCoordinates.second, player.weaponCoordinates.first, player.weaponChar);
+        mvprintw(
+            player.coordinates.second, player.coordinates.first,
+            player.playerChar
+        );
+        mvprintw(
+            player.weaponCoordinates.second, player.weaponCoordinates.first,
+            player.weaponChar
+        );
     };
 
     auto checkPlayerIsDead = [&](Player player){
-        for (auto inf : world.infected)
-            if (inf.coordinates == player.coordinates && inf.alive)
+        for (auto inf : world.infected){
+            if (inf.coordinates == player.coordinates && inf.alive){
                 return true;
+            }
+        }
         return false;
     };
 
@@ -92,6 +101,7 @@ void playGame(World world)
     drawMapLimitBorders(world);
 
     int gameStartEpoch = std::time(0);
+
     while (world.active)
     {
         clearMap();
@@ -106,14 +116,18 @@ void playGame(World world)
         }
 
         // Drop supplies at intervals.
-        if (world.nextSupplyDropEpoch <= std::time(0))
+        if (world.nextSupplyDropEpoch <= std::time(0)){
             world.dropSupplies();
+        }
 
-        if (checkPlayerIsDead(myPlayer))
+        if (checkPlayerIsDead(myPlayer)){
             world.active = false;
+        }
 
         // Update infected positions closer to the player at intervals.
-        if (world.latestInfectedPositionUpdate + world.infectedPositionUpdateMs <= getEpochMs()){
+        if (world.latestInfectedPositionUpdate + world.infectedPositionUpdateMs
+                <= getEpochMs())
+        {
             world.latestInfectedPositionUpdate = getEpochMs();
             updateInfectedPositions(world, myPlayer);
         }
@@ -127,16 +141,19 @@ void playGame(World world)
         drawRescueCountdown(world);
 
         // Draw rescue.
-        if (!world.rescue.hasArrived && world.rescue.timeAtArrival <= std::time(0))
+        if (!world.rescue.hasArrived && world.rescue.timeAtArrival <=
+                std::time(0))
             world.rescue.triggerRescueArrival(world);
         else if (world.rescue.hasArrived && !world.rescue.isRescueFinished){
             drawRescue(world);
-            bool coordinatesMatch = myPlayer.coordinates == world.rescue.coordinates;
+            bool coordinatesMatch =
+                    myPlayer.coordinates == world.rescue.coordinates;
             if (coordinatesMatch && world.rescue.canBoard){
                 myPlayer.gameOverMessage = "You have been rescued!";
                 world.active = false;
             }
-            world.rescue.isRescueFinished = world.rescue.timeAtEscape <= std::time(0);
+            world.rescue.isRescueFinished = world.rescue.timeAtEscape <=
+                    std::time(0);
         }
         else if (world.rescue.isRescueFinished && !myPlayer.isRescued){
             myPlayer.gameOverMessage = "Failed to get rescued in time!";
@@ -147,8 +164,9 @@ void playGame(World world)
         napms(25);
 
         // End game if player is not alive.
-        if (!myPlayer.alive)
+        if (!myPlayer.alive){
             world.active = false;
+        }
     }
 
     std::thread(cleanupAudio).detach();
@@ -157,8 +175,9 @@ void playGame(World world)
     bool hasQuit = false;
     while (!hasQuit){
         auto key = getch();
-        if (key == QUIT_KEY)
+        if (key == QUIT_KEY){
             hasQuit = true;
+        }
         napms(25);
     }
 
@@ -171,8 +190,9 @@ void respondToKeyPress (World& world, Player& player, int key)
 {
     auto fixPlayerDirection = [&](DIRECTION direction)
     {
-        if (player.facingDirection != direction)
+        if (player.facingDirection != direction){
             player.facingDirection = direction;
+        }
     };
 
     switch (key){
@@ -232,14 +252,17 @@ void respondToKeyPress (World& world, Player& player, int key)
         }
         case GRENADE_KEY:{
             auto grenadeOptional = player.throwGrenade(world);
-            if (!grenadeOptional.has_value())
+            if (!grenadeOptional.has_value()){
                 break;
+            }
 
             Explosive grenade = grenadeOptional.value();
             world.activeExplosives.push_back(grenade);
 
             std::thread(processGrenadeThrow, std::ref(world), grenade).detach();
-            std::thread(handleGrenadeExplosion, std::ref(world), std::ref(player), grenade._explosiveId.value()).detach();
+            std::thread(handleGrenadeExplosion,
+                std::ref(world), std::ref(player), grenade._explosiveId.value()
+            ).detach();
             break;
         }
         case CLAYMORE_KEY:{
@@ -251,7 +274,9 @@ void respondToKeyPress (World& world, Player& player, int key)
                         break;
                     }
                 }
-                std::thread(handleClaymoreExplosion, std::ref(world), std::ref(player), claymore).detach();
+                std::thread(handleClaymoreExplosion,
+                    std::ref(world), std::ref(player), claymore
+                ).detach();
             }
             else
                 player.plantClaymore(world);
@@ -272,7 +297,8 @@ void drawMapLimitBorders(World world)
 {
     auto colLimits = world.mapColumnLimits;
     auto rowLimits = world.mapRowLimits;
-    std::string vertBorder((colLimits.second + 2) - (colLimits.first - 2), '#');
+    std::string vertBorder(
+            (colLimits.second + 2) - (colLimits.first - 2), '#');
     mvprintw(rowLimits.first - 2, colLimits.first - 2, vertBorder.c_str());
     mvprintw(rowLimits.second + 2, colLimits.first - 2, vertBorder.c_str());
     for (int row = rowLimits.first - 2; row <= rowLimits.second + 2; ++row){
@@ -295,12 +321,16 @@ void drawRescueCountdown(World world)
 {
     Rescue rescue = world.rescue;
     bool hasArrived = rescue.hasArrived;
-    time_t countdownEpoch = hasArrived ? rescue.timeAtEscape : rescue.timeAtArrival;
+
+    time_t countdownEpoch = hasArrived ? rescue.timeAtEscape :
+            rescue.timeAtArrival;
 
     std::string txt = hasArrived ? "Escape: " : "Rescue Arrival: ";
     txt += makeClockString(countdownEpoch - std::time(0));
 
-    int columnBorderLength = world.mapColumnLimits.second - world.mapColumnLimits.first;
+    int columnBorderLength = world.mapColumnLimits.second -
+            world.mapColumnLimits.first;
+
     std::pair<int, int> labelPos = std::make_pair(
             columnBorderLength/2 - txt.length()/2,
             world.mapRowLimits.first - 3);
@@ -314,33 +344,49 @@ void drawRescue(World& world)
 {
     Rescue rescue = world.rescue;
     std::pair<int, int> rescueCoordinates = rescue.coordinates;
-    mvprintw(rescueCoordinates.second, rescueCoordinates.first, rescue.rescueChar);
+    mvprintw(
+        rescueCoordinates.second, rescueCoordinates.first, rescue.rescueChar
+    );
 }
 
 void drawInfected(World& world)
 {
-    for (auto inf : world.infected)
-        if (inf.deathSplatter.has_value())
-            for (auto coord : inf.deathSplatter->coordinates)
+    for (auto inf : world.infected){
+        if (inf.deathSplatter.has_value()){
+            for (auto coord : inf.deathSplatter->coordinates){
                 mvprintw(coord.second, coord.first,
-                        inf.deathSplatter->splatterChar);
-    for (auto inf : world.infected)
-        if (!inf.alive)
+                         inf.deathSplatter->splatterChar);
+            }
+        }
+    }
+    for (auto inf : world.infected){
+        if (!inf.alive){
             mvprintw(inf.coordinates.second, inf.coordinates.first,
-                    inf.infectedChar);
-    for (auto inf : world.infected)
-        if (inf.alive)
+                     inf.infectedChar);
+        }
+    }
+    for (auto inf : world.infected){
+        if (inf.alive){
             mvprintw(inf.coordinates.second, inf.coordinates.first,
-                    inf.infectedChar);
+                     inf.infectedChar);
+        }
+    }
 }
 
 void drawWorldItems(World& world)
 {
-    for (auto drop : world.supplyDrops)
-        mvprintw(drop.coordinates.second, drop.coordinates.first, drop.itemChar);
+    for (auto drop : world.supplyDrops){
+        mvprintw(
+                 drop.coordinates.second, drop.coordinates.first, drop.itemChar
+        );
+    }
 
-    for (auto explosive : world.activeExplosives)
-        mvprintw(explosive.coordinates.second, explosive.coordinates.first, explosive.explosiveChar);
+    for (auto explosive : world.activeExplosives){
+        mvprintw(
+                 explosive.coordinates.second, explosive.coordinates.first,
+                 explosive.explosiveChar
+        );
+    }
 }
 
 void displayEndGame(World world, Player player)
@@ -349,9 +395,13 @@ void displayEndGame(World world, Player player)
     refresh();
 
     int playtime = std::time(0) - static_cast<int>(world.startTime);
+
     std::stringstream endGameMsg;
-    if (!player.gameOverMessage.empty())
+
+    if (!player.gameOverMessage.empty()){
         endGameMsg << player.gameOverMessage << "\n\n";
+    }
+
     endGameMsg << "kills: " << player.killCount << "\n";
     endGameMsg << "playtime: " << makeClockString(playtime);
 

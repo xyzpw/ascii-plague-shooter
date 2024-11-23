@@ -1,9 +1,8 @@
-#include <iostream>
 #include <utility>
 #include <ctime>
 #include "common.h"
 #include "math_utils.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 
 World::World()
 {
@@ -37,8 +36,9 @@ void World::dropSupplies()
 
     for (int i = 0; i != static_cast<int>(FIREARM_TYPE::__COUNT); ++i){
         FIREARM_TYPE type = static_cast<FIREARM_TYPE>(i);
-        if (type != FIREARM_TYPE::RUGER_MK_IV)
+        if (type != FIREARM_TYPE::RUGER_MK_IV){
             availableFirearmTypes.push_back(type);
+        }
     }
 
     Firearm firearm(availableFirearmTypes.at(
@@ -63,8 +63,9 @@ void World::dropSupplies()
         case FIREARM_TYPE::AR15:
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON, 20, 20);
             magazine->isHollowPoint = checkProbability(0.1);
-            if (magazine->isHollowPoint)
+            if (magazine->isHollowPoint){
                 magazine->kineticEnergy = 1300;
+            }
 
             firearm.magazine = magazine.value();
             magCount = magazine->isHollowPoint ? 3 : 6;
@@ -93,12 +94,14 @@ void World::dropSupplies()
     drop.items.firearms.push_back(firearm);
     if (magazine.has_value()){
         nextDropTime += magCount * magazine->cartridgeCount / 20;
-        for (int i = 0; i < magCount; ++i)
+        for (int i = 0; i < magCount; ++i){
             drop.items.magazines.push_back(magazine.value());
+        }
     }
 
-    for (int i = 0; i < randIntInRange(2, 4); ++i)
+    for (int i = 0; i < randIntInRange(2, 4); ++i){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M67_GRENADE));
+    }
     nextDropTime += drop.items.explosives.size() * 4.5;
     if (randIntInRange(0, 1)){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE));
@@ -118,17 +121,21 @@ std::vector<std::pair<int,int>> getSplatterCoordinates(
 
     int increaseAmount = isHorizontal && direction == EAST ||
             !isHorizontal && direction == SOUTH;
-    if (!increaseAmount)
+    if (!increaseAmount){
         increaseAmount = -1;
+    }
 
     auto addFromCurrentPos = [&](int xAmount, int yAmount){
-        if (xAmount == 0 && yAmount == 0)
+        if (xAmount == 0 && yAmount == 0){
             return;
+        }
         std::pair<int, int> _coord = startCoord;
-        if (xAmount != 0)
+        if (xAmount != 0){
             _coord.first += xAmount;
-        if (yAmount != 0)
+        }
+        if (yAmount != 0){
             _coord.second += yAmount;
+        }
         coordinates.push_back(_coord);
     };
     auto addSplatterToBothSides = [&](){
@@ -143,10 +150,12 @@ std::vector<std::pair<int,int>> getSplatterCoordinates(
         }
     };
 
-    if (isHorizontal)
+    if (isHorizontal){
         addFromCurrentPos(direction == EAST ? 1 : -1, 0);
-    else
+    }
+    else{
         addFromCurrentPos(0, direction == NORTH ? -1 : 1);
+    }
 
     if (magUsed.cartridgeType == CARTRIDGE_TYPE::CARTRIDGE_30_06 ||
             magUsed.cartridgeType == CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON)

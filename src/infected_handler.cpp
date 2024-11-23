@@ -1,19 +1,12 @@
-#include <iostream>
 #include <utility>
 #include <cmath>
-#include <algorithm>
 #include <unistd.h>
 #include <thread>
 #include "common.h"
 #include "math_utils.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 #include "infected_handler.h"
-
-bool checkBulletWasFatal(HIT_LOCATION location, int joules);
-bool checkClaymoreIsFacingPos(Explosive claymore, std::pair<int, int> coord);
-int getDelayedDeathTime(HIT_LOCATION location);
-bool checkIsHindered(HIT_LOCATION location);
-bool checkShouldDelayedDeath(HIT_LOCATION location, bool isHollowPoint);
+#include "injury_handler.h"
 
 // Returns the column and row to where a new infected should spawn, respectively.
 std::pair<int, int> getInfectedSpawnPosition(World world)
@@ -28,12 +21,15 @@ void updateInfectedPositions(World& world, Player& player)
 {
     if (!player.alive)
         return;
+
     for (auto& inf : world.infected)
     {
         if (!inf.alive || inf.coordinates == player.coordinates)
             continue;
+
         if (inf.isHindered && checkProbability(0.25))
             continue;
+
         if (inf.delayedDeathHitTime.has_value())
         {
             bool isDead = inf.delayedDeathDuration.value() <=
@@ -61,16 +57,19 @@ void updateInfectedPositions(World& world, Player& player)
 
 void handleFirearmShot(World& world, Player& player)
 {
-    if (!player.activeWeapon.canShoot)
+    if (!player.activeWeapon.canShoot){
         return;
+    }
     bool pointBlank = false;
 
     // Determine if blood splatter should be displayed.
     auto checkShouldSplatter = [&](HIT_LOCATION location, Magazine mag){
-        if (mag.cartridgeType == CARTRIDGE_TYPE::CARTRIDGE_22LR)
+        if (mag.cartridgeType == CARTRIDGE_TYPE::CARTRIDGE_22LR){
             return false;
-        else if (location == HIT_LOCATION::HEAD && mag.isHollowPoint)
+        }
+        else if (location == HIT_LOCATION::HEAD && mag.isHollowPoint){
             return true;
+        }
         return checkProbability(mag.isHollowPoint ? 0.04 : 0.02);
     };
 
@@ -85,17 +84,11 @@ void handleFirearmShot(World& world, Player& player)
         return checkProbability(pHit);
     };
 
-    int playerCol = player.coordinates.first, playerRow = player.coordinates.second;
+    int playerCol = player.coordinates.first,
+                    playerRow = player.coordinates.second;
 
     DIRECTION direction = player.facingDirection;
-    bool isVert = direction == NORTH || direction == SOUTH;
     std::vector<std::pair<int, int>> coordinatesInRange{};
-
-    auto getEnemyDistance = [&](Infected inf){
-        if (isVert)
-            return std::abs(player.coordinates.second - inf.coordinates.second);
-        return std::abs(player.coordinates.first - inf.coordinates.first);
-    };
 
     // Kinetic energy of the fired bullet; decreases with distance due to air
     // resistance (drag).
@@ -104,17 +97,19 @@ void handleFirearmShot(World& world, Player& player)
     std::pair<int, int> bulletCoordinates = player.coordinates;
     auto updateBulletCoordinates = [&]()
     {
-        if (direction == NORTH || direction == SOUTH)
+        if (direction == NORTH || direction == SOUTH){
             bulletCoordinates.second += direction == SOUTH ? +1 : -1;
-        else
+        }
+        else{
             bulletCoordinates.first += direction == EAST ? +1 : -1;
+        }
         return checkCoordinatesInsideMap(world, bulletCoordinates);
     };
     updateBulletCoordinates();
 
     bool isBulletHp = player.activeWeapon.magazine.isHollowPoint;
     // Check each coordinate in the bullet's path to see if it hits an infected.
-    while (updateBulletCoordinates() && activeBulletKE > 79)
+    while (updateBulletCoordinates() && activeBulletKE >= MINIMUM_LETHAL_ENERGY)
     {
         activeBulletKE -=
                 player.activeWeapon.magazine.kineticEnergyLossPerMeter;
@@ -122,12 +117,16 @@ void handleFirearmShot(World& world, Player& player)
         {
             if (inf.alive && inf.coordinates == bulletCoordinates)
             {
-                int playerToInfDistance = getEnemyDistance(inf);
+                int playerToInfDistance = getMapPointsDistance(
+                    player.coordinates, inf.coordinates
+                );
+
                 if (!checkBulletHit(playerToInfDistance))
                     return;
 
                 int keDamage = activeBulletKE;
-                activeBulletKE *= isBulletHp ? 0.1 : 0.8;
+                activeBulletKE *= isBulletHp ? PENETRATE_KE_FACTOR_HP :
+                                    PENETRATE_KE_FACTOR;
                 keDamage -= activeBulletKE;
 
                 HIT_LOCATION hitLocation = getHitLocation(pointBlank);
@@ -140,8 +139,9 @@ void handleFirearmShot(World& world, Player& player)
                     inf.markAsDead();
                     ++player.killCount;
                 }
-                else if (checkIsHindered(hitLocation))
+                else if (checkIsHindered(hitLocation)){
                     inf.isHindered = true;
+                }
 
                 // Add delayed death to infected if in probability range.
                 if (checkShouldDelayedDeath(hitLocation, isBulletHp))
@@ -157,16 +157,16 @@ void handleFirearmShot(World& world, Player& player)
                 }
 
                 // Adding splatter effect to infected when shot.
-                if (checkShouldSplatter(hitLocation,
-                        player.activeWeapon.magazine))
+                if (checkShouldSplatter(hitLocation, player.activeWeapon.magazine))
                 {
                     if (inf.deathSplatter.has_value()){
                         auto coords = getSplatterCoordinates(
                                 inf.coordinates, hitLocation,
                                 player.activeWeapon.magazine,
                                 player.facingDirection);
-                        for (auto coord : coords)
+                        for (auto coord : coords){
                             inf.deathSplatter->coordinates.push_back(coord);
+                        }
                     }
                     else{
                         SplatterEffect splatter{.coordinates=
@@ -204,43 +204,22 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
     int fragmentCount = getGrenade().fragmentCount;
     int energyLossPerMeter = getGrenade().fragmentKineticEnergyLossPerMeter;
 
-    auto checkWasFatal = [&](int distance){
-        double area = computeAreaFromDistance(distance);
-        int pascals = computeInverseSquareLaw(getGrenade().explosionPascals,
-            distance
-        );
-        int fragments = getGrenade().fragmentCount / area;
-
-        int energy = kineticEnergy - energyLossPerMeter * distance;
-        double explosionLethalProb = computeExplosionLethalProb(pascals);
-        double fragmentLethalProb = computeFragmentLethalProb(energy, fragments);
-        bool wasFatal = checkProbability(explosionLethalProb);
-        if (!wasFatal)
-            wasFatal = checkProbability(fragmentLethalProb);
-        return wasFatal;
-    };
-
     usleep(getGrenade().explosionDelay * 1e6);
 
     double playerDistance = getMapPointsDistance(
         player.coordinates, getGrenade().coordinates
     );
 
-    bool wasFatalToPlayer = checkWasFatal(playerDistance);
-    if (wasFatalToPlayer){
+    if (checkExplosionWasFatal(getGrenade(), playerDistance)){
         player.gameOverMessage = "cause of death: grenade";
         player.alive = false;
         return;
     }
-    int pascalAtPlayer = computeInverseSquareLaw(
-        getGrenade().explosionPascals, playerDistance
-    );
 
-    bool isClose = computeEardrumRuptureProb(pascalAtPlayer);
-
-    std::thread(playAudio, isClose ? getGrenade().explodeCloseAudioFile :
-        getGrenade().explodeAudioFile
-    ).detach();
+    std::thread(playAudio,
+                checkExplosionRupturedEardrum(getGrenade(), playerDistance) ?
+                    getGrenade().explodeCloseAudioFile :
+                    getGrenade().explodeAudioFile).detach();
 
     for (auto& inf : world.infected)
     {
@@ -248,23 +227,23 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
             inf.coordinates, getGrenade().coordinates
         );
 
-        if (checkWasFatal(distance)){
+        if (checkExplosionWasFatal(getGrenade(), distance)){
             inf.markAsDead();
             ++player.killCount;
             continue;
         }
 
-        double area = computeAreaFromDistance(distance);
-        int fragments = getGrenade().fragmentCount / area;
-
-        for (int i = 0; i < fragments && !inf.isHindered; ++i){
-            if (checkIsHindered(getHitLocation(false)))
-                inf.isHindered = true;
+        if (checkExplosionWasHindering(getGrenade(), distance)){
+            inf.isHindered = true;
         }
     }
 
-    for (auto exp = world.activeExplosives.begin(); exp != world.activeExplosives.end(); ++exp)
-        if (exp->_explosiveId.has_value() && exp->_explosiveId.value() == explosiveId){
+    // Remove explosive from world's active explosives after explosion.
+    for (auto exp = world.activeExplosives.begin();
+              exp != world.activeExplosives.end(); ++exp)
+        if (exp->_explosiveId.has_value() &&
+            exp->_explosiveId.value() == explosiveId)
+        {
             world.activeExplosives.erase(exp);
             break;
         }
@@ -281,39 +260,20 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     int kineticEnergyLossPerMeter = explosive.fragmentKineticEnergyLossPerMeter;
     int explosionPascals = explosive.explosionPascals;
 
-    // Check if position is within fragments range.
-    auto checkIsInFragmentArea = [&](std::pair<int, int> coord){
-        bool isHorizontal = claymoreDirection == EAST || claymoreDirection == WEST;
-        int distance = getMapPointsDistance(coord, claymorePosition);
-        int coordChange = computeCoordinatesChange(coord, claymorePosition, isHorizontal);
-        int coordChangeWide = computeCoordinatesChange(coord, claymorePosition, !isHorizontal);
-        int areaWidth = getSectorWidthAtDistance(coordChange, fragmentsDegrees);
-        bool result = coordChangeWide <= areaWidth/2;
-        return result;
-    };
-
-    // How many fragments at position.
-    auto fragmentCountAtPos = [&](std::pair<int, int> coord){
-        if (!checkIsInFragmentArea(coord) || !checkClaymoreIsFacingPos(explosive, coord))
-            return 0;
-        bool isHorizontal = claymoreDirection == EAST || claymoreDirection == WEST;
-        int diff = computeCoordinatesChange(coord, claymorePosition, isHorizontal);
-        int area = computeSectorAreaFromDistance(diff, fragmentsDegrees);
-        int fragments = area == 0 ? explosive.fragmentCount : explosive.fragmentCount / area;
-        return fragments;
-    };
-
     // Check if explosion was lethal.
     auto checkFatal = [&](std::pair<int, int> coord){
-        int fragments = fragmentCountAtPos(coord);
-        double distance = getMapPointsDistance(coord, claymorePosition);
+        int fragments = getClaymoreFragmentCountAtPos(explosive, coord);
+        int distance = getMapPointsDistance(coord, claymorePosition);
         int energy = kineticEnergy - kineticEnergyLossPerMeter * distance;
-        bool p = computeFragmentLethalProb(energy, fragments);
-        bool pEx = computeExplosionLethalProb(
-            computeInverseSquareLaw(explosionPascals, distance));
-        bool fragmentsLethal = checkProbability(p);
-        bool explosionLethal = checkProbability(pEx);
-        return fragmentsLethal || explosionLethal;
+        int pascals = computeInverseSquareLaw(
+            explosive.explosionPascals, distance
+        );
+        if (checkProbability(computeFragmentLethalProb(energy, fragments))){
+            return true;
+        } else if (checkProbability(computeExplosionLethalProb(pascals))){
+            return true;
+        }
+        return false;
     };
 
     player.hasPlantedClaymore = false;
@@ -331,8 +291,12 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     double isCloseProb = computeEardrumRuptureProb(pascalsAtPlayer);
     bool isClose = checkProbability(isCloseProb);
 
-    std::thread(playAudio, isClose ? explosive.explodeCloseAudioFile : explosive.explodeAudioFile).detach();
-    for (auto ex = world.activeExplosives.begin(); ex != world.activeExplosives.end();)
+    std::thread(playAudio, isClose ? explosive.explodeCloseAudioFile :
+                explosive.explodeAudioFile).detach();
+
+    // Remove the claymore from world's active explosives after detonation.
+    for (auto ex = world.activeExplosives.begin();
+         ex != world.activeExplosives.end();)
     {
         if (ex->_explosiveId == explosive._explosiveId){
             world.activeExplosives.erase(ex);
@@ -352,90 +316,13 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         }
 
         // Check if fragments hindered infected.
-        int fragments = fragmentCountAtPos(inf.coordinates);
-        for (int i = 0; i < fragments && !inf.isHindered; ++i)
-            if (checkIsHindered(getHitLocation(false)))
+        int fragments = getClaymoreFragmentCountAtPos(explosive, inf.coordinates);
+        for (int i = 0; i < fragments && !inf.isHindered; ++i){
+            if (checkIsHindered(randHitLocation())){
                 inf.isHindered = true;
-    }
-}
-
-bool checkBulletWasFatal(const HIT_LOCATION location, const int joules)
-{
-    double pFatal = computeDeathProbability(location, joules);
-    bool wasFatal = checkProbability(pFatal);
-    return wasFatal;
-}
-
-// Time until bullet causes death if the initial hit was not fatal.
-int getDelayedDeathTime(HIT_LOCATION location)
-{
-    switch (location){
-        case HIT_LOCATION::HEAD:{
-            return 0;
-        }
-        case HIT_LOCATION::THORAX:{
-            return randIntInRange(2, 10);
-        }
-        case HIT_LOCATION::ABDOMEN:{
-            return randIntInRange(5, 26);
-        }
-        default: {
-            return 85 / 2;
+            }
         }
     }
-}
-
-bool checkShouldDelayedDeath(HIT_LOCATION location, bool isHollowPoint)
-{
-    switch (location){
-        case HIT_LOCATION::HEAD:
-            return checkProbability(0.9);
-        case HIT_LOCATION::THORAX:
-            return checkProbability(isHollowPoint ? 0.88 : 0.5);
-        case HIT_LOCATION::ABDOMEN:
-            return checkProbability(isHollowPoint ? 0.6 : 0.2);
-        default:
-            return checkProbability(isHollowPoint ? 0.3 : 0.1);
-    }
-}
-
-bool checkIsHindered(HIT_LOCATION location)
-{
-    switch (location){
-        case HIT_LOCATION::HEAD:
-            return 1;
-        case HIT_LOCATION::ABDOMEN:
-            return checkProbability(0.5);
-        case HIT_LOCATION::LIMBS:
-            return checkProbability(0.5);
-        default:
-            return 0;
-    }
-}
-
-// Check if a claymore is facing the direction at a given coordinate.
-bool checkClaymoreIsFacingPos(const Explosive claymore, const std::pair<int, int> coord)
-{
-    bool isFacing = false;
-    DIRECTION claymoreDirection = claymore.facingDirection.value();
-    std::pair<int, int> claymoreCoordinates = claymore.coordinates;
-
-    switch (claymoreDirection)
-    {
-        case EAST:
-            isFacing = coord.first > claymoreCoordinates.first;
-            break;
-        case WEST:
-            isFacing = coord.first < claymoreCoordinates.first;
-            break;
-        case NORTH:
-            isFacing = coord.second < claymoreCoordinates.second;
-            break;
-        case SOUTH:
-            isFacing = coord.second > claymoreCoordinates.second;
-            break;
-    }
-    return isFacing;
 }
 
 void removeDeadInfected(World& world)

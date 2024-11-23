@@ -1,8 +1,5 @@
-#include <iostream>
-#include <unistd.h>
-#include <utility>
 #include "common.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 #include "infected_handler.h"
 
 void Rescue::triggerRescueArrival(World& world)

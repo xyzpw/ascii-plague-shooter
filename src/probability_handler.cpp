@@ -1,15 +1,15 @@
-#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include "common.h"
 #include "math_utils.h"
-#include "gameUtilities.h"
+#include "game_utilities.h"
 
 // Probability of bullet wound being lethal.
 double computeDeathProbability(HIT_LOCATION location, int joules)
 {
-    if (joules < 79)
+    if (joules < MINIMUM_LETHAL_ENERGY)
         return 0;
+
     double probability;
     switch (location)
     {
@@ -39,10 +39,12 @@ double computeEardrumRuptureProb(int pascals)
 double computeExplosionLethalProb(int pascals)
 {
     double psi = pascals / 6894.8;
+
     if (psi < 40)
         return 0.0;
     else if (psi >= 92)
         return 1.0;
+
     double probability = 1 / (1 + std::exp(-0.2088 * (psi - 62)));
     return probability;
 }
@@ -52,12 +54,15 @@ double computeFragmentLethalProb(int joules, int fragments)
     double pFatal = 0.0;
 
     std::vector<HIT_LOCATION> hitLocations;
-    for (int i = 0; i < static_cast<int>(HIT_LOCATION::__COUNT); ++i)
+    for (int i = 0; i < static_cast<int>(HIT_LOCATION::__COUNT); ++i){
         hitLocations.push_back(static_cast<HIT_LOCATION>(i));
+    }
 
-    for (auto location : hitLocations)
+    for (auto location : hitLocations){
         pFatal += computeDeathProbability(location, joules) /
                 static_cast<double>(hitLocations.size());
+    }
+
     pFatal = 1 - std::pow(1 - pFatal, fragments);
     return pFatal;
 }
