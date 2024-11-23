@@ -1,6 +1,6 @@
 GXX = g++
 TARGET = ascii-plague-shooter
-SOURCES = ascii-plague-shooter.cpp src/*.cpp
+SOURCES = src/*.cpp
 FLAGS = -o $(TARGET) -Iinclude -lncurses -lSDL2
 
 $(TARGET): $(SOURCES)
