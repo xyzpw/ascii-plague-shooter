@@ -79,5 +79,5 @@ To install, `cd` into the root of the repo and use the `make` command to
 Example on compiling and running the game:
 ```bash
 $ make
-$ ./ascii-plague-shooter
+$ ./plague-shooter
 ```

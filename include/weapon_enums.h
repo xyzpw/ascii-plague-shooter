@@ -1,0 +1,23 @@
+#pragma once
+
+enum class FIREARM_TYPE{
+    GLOCK_17,
+    AR15,
+    BOLT_ACTION_RIFLE,
+    RUGER_MK_IV,
+    __COUNT,
+};
+
+enum class CARTRIDGE_TYPE{
+    CARTRIDGE_9MM,
+    CARTRIDGE_223_REMINGTON,
+    CARTRIDGE_30_06,
+    CARTRIDGE_22LR,
+    __COUNT,
+};
+
+enum class EXPLOSIVE_TYPE{
+    M67_GRENADE,
+    M18A1_CLAYMORE,
+    __COUNT,
+};
