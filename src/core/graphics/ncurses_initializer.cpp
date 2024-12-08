@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include "graphics/ncurses_initializer.h"
+#include "constants/ncurses_constants.h"
 
 void initializeScreen()
 {
@@ -9,6 +10,8 @@ void initializeScreen()
     curs_set(0);
     use_default_colors();
     nodelay(stdscr, 1);
+    start_color();
+    init_pair(COLOR_PAIR_SPLATTER, COLOR_ID_SPLATTER, -1);
 }
 
 void cleanupScreen()

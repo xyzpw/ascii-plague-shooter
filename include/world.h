@@ -7,6 +7,7 @@
 #include "logic/infected_logic.h"
 #include "entities/explosive.h"
 #include "entities/rescue.h"
+#include "game_settings.h"
 
 struct World{
     double startTime;
@@ -20,6 +21,7 @@ struct World{
     InfectedMovement infectedMovement;
     double nextSupplyDropEpoch;
     Rescue rescue;
+    GameSettings settings;
     void dropSupplies();
     World();
 };

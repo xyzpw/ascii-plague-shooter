@@ -37,8 +37,10 @@ std::vector<Position> getSplatterPositions(
 
     auto addSplatterToBothSides = [&](){
         if (isHorizontal){
-            addFromCurrentPos(direction == EAST ? 2 : -2, -1);
-            addFromCurrentPos(direction == EAST ? 2 : -2, 1);
+            int rDist1 = randIntInRange(1, 2);
+            int rDist2 = randIntInRange(1, 2);
+            addFromCurrentPos(direction == EAST ? 2 : -2, rDist1);
+            addFromCurrentPos(direction == EAST ? 2 : -2, 0 - rDist2);
         }
         else {
             addFromCurrentPos(
