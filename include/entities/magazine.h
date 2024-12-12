@@ -9,6 +9,7 @@ struct Magazine{
     bool isHollowPoint = false;
     int kineticEnergy;
     double kineticEnergyLossPerMeter;
+    bool isHighVelocity; // Bullet travels faster than 2,000 ft/s.
     Magazine(CARTRIDGE_TYPE cartridge = CARTRIDGE_TYPE::__COUNT,
             int maxRounds = 0, int rounds = 0);
 };

@@ -20,7 +20,8 @@ bool checkBulletWasFatal(const HIT_LOCATION location, const int joules)
 }
 
 // Return the rate at which an enemy gets closer to dying from delayed death.
-int calculateDelayedDeathLossRate(HIT_LOCATION location, int joules)
+int calculateDelayedDeathLossRate(HIT_LOCATION location,
+    bool isHighVel, int joules)
 {
     int rate = 0;
     int min, max;
@@ -30,10 +31,16 @@ int calculateDelayedDeathLossRate(HIT_LOCATION location, int joules)
             max = DELAYED_DEATH_LOSS_RATE_HEAD_MAX;
             break;
         case HIT_LOCATION::THORAX:
+            if (isHighVel){
+                return randIntInRange(DELAYED_DEATH_LOSS_RATE_THORAX_MAX, 622);
+            }
             min = DELAYED_DEATH_LOSS_RATE_THORAX_MIN;
             max = DELAYED_DEATH_LOSS_RATE_THORAX_MAX;
             break;
         case HIT_LOCATION::ABDOMEN:
+            if (isHighVel){
+                return randIntInRange(DELAYED_DEATH_LOSS_RATE_ABDOMEN_MAX, 200);
+            }
             min = DELAYED_DEATH_LOSS_RATE_ABDOMEN_MIN;
             max = DELAYED_DEATH_LOSS_RATE_ABDOMEN_MAX;
             break;
@@ -134,17 +141,15 @@ bool checkExplosionWasHindering(Explosive explosive, double distance)
 }
 
 // Checks if the injury results in a splatter effect.
-bool checkShouldSplatter(CARTRIDGE_TYPE cartridge, HIT_LOCATION location,
-                         int joules, double muzzleDistance)
+bool checkShouldSplatter(HIT_LOCATION location, bool isHighVel, int joules,
+                            double muzzleDistance)
 {
     if (joules >= HEADSHOT_SPATTER_REQUIRED_FORCE &&
         location == HIT_LOCATION::HEAD)
     {
         return true;
     }
-    else if (cartridge == CARTRIDGE_TYPE::CARTRIDGE_30_06 ||
-                cartridge == CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON)
-    {
+    else if (isHighVel){
         return muzzleDistance <= 2;
     }
 

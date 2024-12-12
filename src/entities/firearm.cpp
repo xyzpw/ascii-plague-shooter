@@ -8,18 +8,18 @@ Firearm::Firearm(FIREARM_TYPE type)
     firearmType = type;
     switch (type)
     {
-        case FIREARM_TYPE::GLOCK_17: {
+        case FIREARM_TYPE::SIG_M17: {
             reloadTime = 1.75;
             fastReloadTime = 0.5;
             chamberReloadDelay = 0.1;
-            name = "Glock 17";
-            shootAudioFile = "9mm.wav";
+            name = "SIG Sauer M17";
+            shootAudioFile = "sig_m17.wav";
             shootIntervalMs = 300;
             accuracyDecay = HANDGUN_ACCURACY_DECAY;
             accuracyScaleFactor = HANDGUN_ACCURACY_MULTIPLIER;
             cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_9MM;
-            loadedRounds = 10;
-            magazine = Magazine(cartridgeType, 10, 9);
+            loadedRounds = 17;
+            magazine = Magazine(cartridgeType, 17, 16);
             break;
         }
         case FIREARM_TYPE::AR15: {

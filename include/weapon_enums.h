@@ -1,7 +1,7 @@
 #pragma once
 
 enum class FIREARM_TYPE{
-    GLOCK_17,
+    SIG_M17,
     AR15,
     BOLT_ACTION_RIFLE,
     RUGER_MK_IV,

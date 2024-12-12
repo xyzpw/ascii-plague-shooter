@@ -11,8 +11,10 @@ bool checkExplosionWasFatal(Explosive, double distance);
 bool checkExplosionRupturedEar(Explosive, double distance);
 bool checkExplosionWasHindering(Explosive, double distance);
 HIT_LOCATION randHitLocation();
-bool checkShouldSplatter(CARTRIDGE_TYPE, HIT_LOCATION,
-                         int joules, double muzzleDistance
+bool checkShouldSplatter(HIT_LOCATION, bool isHighVel, int joules,
+        double muzzleDistance
 );
-int calculateDelayedDeathLossRate(HIT_LOCATION, int joules);
+int calculateDelayedDeathLossRate(HIT_LOCATION,
+    bool isHighVelocity, int joules
+);
 double getBulletExitProbability(CARTRIDGE_TYPE);

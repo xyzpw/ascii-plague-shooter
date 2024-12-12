@@ -1,7 +1,8 @@
 #include <iostream>
 #include <unistd.h>
-#include <ncurses.h>
 #include "common.h"
+#include "audio_handler.h"
+#include "graphics/ncurses_initializer.h"
 #include "arg_utils.h"
 
 int main(int argc, char **argv)
@@ -13,9 +14,11 @@ int main(int argc, char **argv)
 
     try{
         playGame(world);
-    } catch(std::runtime_error& err){
-        endwin();
-        printf("\n\n%s\n", err.what());
+    } catch(std::exception& err){
+        cleanupScreen();
+        cleanupAudio();
+        printf("\nexception: %s\n", err.what());
+        printf("Press enter to exit.\n");
         getchar();
     }
 

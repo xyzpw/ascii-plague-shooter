@@ -4,7 +4,7 @@
 constexpr double BULLET_PENETRATE_KE_FACTOR = 0.8;
 constexpr double BULLET_PENETRATE_KE_FACTOR_HP = 0.1;
 
-constexpr int BULLET_KE_9MM = 494;
+constexpr int BULLET_KE_9MM = 536;
 constexpr int BULLET_KE_223_REMINGTON = 1738;
 constexpr int BULLET_KE_223_REMINGTON_HP = 1300;
 constexpr int BULLET_KE_30_06 = 3894;
@@ -20,3 +20,10 @@ constexpr double RIFLE_ACCURACY_DECAY = 0.0135;
 constexpr double RIFLE_ACCURACY_MULTIPLIER = 1.7;
 constexpr double A_RIFLE_ACCURACY_DECAY = 0.02;
 constexpr double A_RIFLE_ACCURACY_MULTIPLIER = 1.69;
+
+// Cost of each cartridge -- supply drop delay in seconds.
+constexpr double CARTRIDGE_9MM_COST = 0.96;
+constexpr double CARTRIDGE_9MM_HP_COST = 1.7;
+constexpr double CARTRIDGE_223_REMINGTON_COST = 1.4;
+constexpr double CARTRIDGE_223_REMINGTON_HP_COST = 2;
+constexpr double CARTRIDGE_30_06_COST = 3.9;

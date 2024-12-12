@@ -55,54 +55,54 @@ void World::dropSupplies()
     int magCount = 0;
 
     switch (firearm.firearmType){
-        case FIREARM_TYPE::GLOCK_17:{
-            bool isDoubleStackMag = randIntInRange(0, 1);
-            int rounds = isDoubleStackMag ? 17 : 10;
+        case FIREARM_TYPE::SIG_M17:{
+            magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_9MM, 17, 17);
+            magazine->isHollowPoint = true;
 
-            magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_9MM, rounds, rounds);
-            magazine->isHollowPoint = !isDoubleStackMag;
+            firearm.magazine.isHollowPoint = true;
 
-            firearm.magazine = magazine.value();
-            firearm.loadedRounds = firearm.magazine.cartridgeCount;
             magCount = 2;
-            nextDropTime += 50;
+            nextDropTime += magazine->capacity * (magCount + 1) *
+                        CARTRIDGE_9MM_HP_COST;
             break;
         }
         case FIREARM_TYPE::AR15:
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON, 20, 20);
-            magazine->isHollowPoint = checkProbability(0.33);
+            magazine->isHollowPoint = checkProbability(0.5);
             if (magazine->isHollowPoint){
                 magazine->kineticEnergy = BULLET_KE_223_REMINGTON_HP;
             }
 
             firearm.magazine = magazine.value();
-            magCount = magazine->isHollowPoint ? 3 : 6;
+            magCount = randIntInRange(1, 3);
 
-            nextDropTime += 200;
+            nextDropTime += magazine->isHollowPoint ?
+                        magazine->capacity * (magCount + 1) *
+                            CARTRIDGE_223_REMINGTON_HP_COST :
+                        magazine->capacity * (magCount + 1) *
+                            CARTRIDGE_223_REMINGTON_COST;
             break;
         case FIREARM_TYPE::BOLT_ACTION_RIFLE:{
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_30_06, 4, 4);
             magCount = 1;
+            nextDropTime += magazine->capacity * (magCount + 1) *
+                        CARTRIDGE_30_06_COST;
 
-            // Add additional glock 17 with 2 FMJ double stacked magazines.
-            Firearm glock(FIREARM_TYPE::GLOCK_17);
-            Magazine _mag = Magazine(CARTRIDGE_TYPE::CARTRIDGE_9MM, 17, 17);
-            glock.magazine = _mag;
-            glock.magazine.cartridgeCount -= 1;
+            // Add M17 with 2 additional magazines to the player's inventory.
+            Firearm m17(FIREARM_TYPE::SIG_M17);
+            Magazine _mag(CARTRIDGE_TYPE::CARTRIDGE_9MM, 17, 17);
+            nextDropTime += _mag.capacity * CARTRIDGE_9MM_COST;
             for (int i = 0; i < 2; ++i){
                 drop.items.magazines.push_back(_mag);
+                nextDropTime += _mag.capacity * CARTRIDGE_9MM_COST;
             }
-            glock.loadedRounds = glock.magazine.cartridgeCount + 1;
-            drop.items.firearms.push_back(glock);
-
-            nextDropTime += 150;
+            drop.items.firearms.push_back(m17);
             break;
         }
     }
 
     drop.items.firearms.push_back(firearm);
     if (magazine.has_value()){
-        nextDropTime += magCount * magazine->cartridgeCount / 20;
         for (int i = 0; i < magCount; ++i){
             drop.items.magazines.push_back(magazine.value());
         }
@@ -110,13 +110,12 @@ void World::dropSupplies()
 
     for (int i = 0; i < randIntInRange(2, 4); ++i){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M67_GRENADE));
+        nextDropTime += 4;
     }
-
-    nextDropTime += drop.items.explosives.size() * 4.5;
 
     if (randIntInRange(0, 1)){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE));
-        nextDropTime += 11;
+        nextDropTime += 8;
     }
 
     supplyDrops.push_back(drop);

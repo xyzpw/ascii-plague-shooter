@@ -62,6 +62,10 @@ void Player::updateHudText()
                         str += frac.second + " ";
                         break;
                     }
+                    else if (magDecimal <= 0.125){
+                        str += "\u2581 ";
+                        break;
+                    }
                 }
             }
         }
@@ -137,10 +141,12 @@ void Player::shootFirearm()
     std::thread(playAudio, activeWeapon.shootAudioFile).detach();
 
     activeWeapon.magazine.cartridgeCount -= 1;
-    activeWeapon.loadedRounds -= 1;
-    if (activeWeapon.isChambered && activeWeapon.loadedRounds == 0){
-        activeWeapon.isChambered = false;
+    if (activeWeapon.magazine.cartridgeCount < 0){
         activeWeapon.magazine.cartridgeCount = 0;
+    }
+    activeWeapon.loadedRounds -= 1;
+    if (activeWeapon.isChambered && activeWeapon.loadedRounds <= 0){
+        activeWeapon.isChambered = false;
     }
 
     usleep(activeWeapon.shootIntervalMs * 1e3);

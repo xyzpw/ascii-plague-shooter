@@ -17,10 +17,11 @@ void handleFirearmShot(World& world, Player& player)
     int activeBulletKe = player.activeWeapon.magazine.kineticEnergy;
     int bulletKeLoss = player.activeWeapon.magazine.kineticEnergyLossPerMeter;
     bool isBulletHp = player.activeWeapon.magazine.isHollowPoint;
-    double PENETRATE_FACTOR = isBulletHp ? BULLET_PENETRATE_KE_FACTOR_HP :
+    bool isHighVelocity = player.activeWeapon.magazine.isHighVelocity;
+    const double PENETRATE_FACTOR = isBulletHp ? BULLET_PENETRATE_KE_FACTOR_HP :
             BULLET_PENETRATE_KE_FACTOR;
 
-    double EXIT_PROBABILITY = getBulletExitProbability(
+    const double EXIT_PROBABILITY = getBulletExitProbability(
             player.activeWeapon.magazine.cartridgeType
     );
 
@@ -70,8 +71,12 @@ void handleFirearmShot(World& world, Player& player)
             }
             impactKe -= activeBulletKe;
 
-            bool isFatal = isBulletHp && hitLocation == HIT_LOCATION::HEAD ||
-                            checkBulletWasFatal(hitLocation, impactKe);
+            bool isFatal = checkBulletWasFatal(hitLocation, impactKe);
+            if (!isFatal && (isBulletHp || isHighVelocity) &&
+                hitLocation == HIT_LOCATION::HEAD)
+            {
+                isFatal = true;
+            }
 
             if (isFatal){
                 inf.markAsDead();
@@ -79,12 +84,15 @@ void handleFirearmShot(World& world, Player& player)
                 if (hitLocation == HIT_LOCATION::HEAD)
                     player.gameStats.addHeadshot();
             }
-            else if (checkShouldDelayedDeath(hitLocation, isBulletHp)){
+            else if (checkShouldDelayedDeath(hitLocation, isBulletHp) ||
+                        isHighVelocity)
+            {
                 if (!inf.delayedDeathStartEpoch.has_value()){
                     inf.delayedDeathStartEpoch = getEpochAsDecimal();
                 }
                 inf.delayedDeathLossRate +=
-                    calculateDelayedDeathLossRate(hitLocation, impactKe);
+                    calculateDelayedDeathLossRate(hitLocation, isHighVelocity,
+                                                    impactKe);
             }
 
             // Check if the bullet wound was hindering.
@@ -93,9 +101,8 @@ void handleFirearmShot(World& world, Player& player)
             }
 
             // Check if the bullet wound causes a splatter effect.
-            if (checkShouldSplatter(
-                player.activeWeapon.magazine.cartridgeType, hitLocation,
-                impactKe, muzzleInfDistance))
+            if (checkShouldSplatter(hitLocation, isHighVelocity, impactKe,
+                muzzleInfDistance))
             {
                 SplatterEffect s;
                 s.positions = getSplatterPositions(
