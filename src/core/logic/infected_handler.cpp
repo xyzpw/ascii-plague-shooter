@@ -151,7 +151,10 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
         player.position, getGrenade().position
     );
 
-    if (checkExplosionWasFatal(getGrenade(), playerDistance)){
+    // Check if grenade was fatal to player if they are within fragmentation range.
+    if (computeAreaFromDistance(playerDistance) <= fragmentCount &&
+        checkExplosionWasFatal(getGrenade(), playerDistance))
+    {
         player.gameStats.setEndGameMessage(GAME_END_MSG_GRENADE);
         player.alive = false;
         return;
@@ -176,7 +179,7 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
         }
 
         if (checkExplosionWasHindering(getGrenade(), distance)){
-            inf.isHindered = true;
+            inf.makeHindered();
         }
     }
 
@@ -191,9 +194,6 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
 
 void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
 {
-    // Claymore explosion fires fragments within a 60 degree arc.
-    int fragmentsDegrees = 60;
-
     Position claymorePosition = explosive.position;
 
     DIRECTION claymoreDirection = explosive.facingDirection.value();
@@ -267,7 +267,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         int fragments = getClaymoreFragmentCountAtPos(explosive, inf.position);
         for (int i = 0; i < fragments && !inf.isHindered; ++i){
             if (checkShouldHinder(randHitLocation())){
-                inf.isHindered = true;
+                inf.makeHindered();
             }
         }
     }

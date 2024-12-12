@@ -13,7 +13,7 @@ double computeInverseSquareLaw(double value, double distance)
 
 double computeAreaFromDistance(double distance)
 {
-    double area = PI * std::pow(distance, 2);
+    double area = 4 * PI * std::pow(distance, 2);
     return area;
 }
 

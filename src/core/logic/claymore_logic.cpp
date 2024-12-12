@@ -1,3 +1,4 @@
+#include <cmath>
 #include "logic/claymore_logic.h"
 #include "constants/explosive_constants.h"
 #include "common.h"
@@ -25,6 +26,11 @@ int getClaymoreFragmentCountAtPos(Explosive claymore, Position pos)
 
     int fragmentCount = sectorArea == 0 ? claymore.fragmentCount :
                         claymore.fragmentCount / sectorArea;
+
+    if (fragmentCount == 0){
+        double p = 1 - std::pow(1 - 1.0/sectorArea, claymore.fragmentCount);
+        fragmentCount = checkProbability(p) ? 1 : 0;
+    }
 
     return fragmentCount;
 }

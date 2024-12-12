@@ -1,3 +1,4 @@
+#include <cmath>
 #include "injury_utils.h"
 #include "injury_enums.h"
 #include "probability_utils.h"
@@ -81,7 +82,7 @@ bool checkShouldHinder(HIT_LOCATION location)
 {
     switch (location){
         case HIT_LOCATION::HEAD:
-            return HINDER_PROBABILITY_HEAD;
+            return checkProbability(HINDER_PROBABILITY_HEAD);
         case HIT_LOCATION::ABDOMEN:
             return checkProbability(HINDER_PROBABILITY_ABDOMEN);
         case HIT_LOCATION::LIMBS:
@@ -95,7 +96,12 @@ bool checkExplosionWasFatal(Explosive explosive, double distance)
 {
     double area = computeAreaFromDistance(distance);
     int pascals = computeInverseSquareLaw(explosive.explosionPascals, distance);
-    int fragmentCount = explosive.fragmentCount / area;
+    int fragmentCount = area > 0 ? explosive.fragmentCount / area :
+                        explosive.fragmentCount;
+    if (fragmentCount == 0){
+        double p = 1 - std::pow(1 - 1.0/area, explosive.fragmentCount);
+        fragmentCount = checkProbability(p) ? 1 : 0;
+    }
 
     int fragmentKe = explosive.fragmentKineticEnergy -
         explosive.fragmentKineticEnergyLossPerMeter * distance;
@@ -126,9 +132,13 @@ bool checkExplosionRupturedEar(Explosive explosive, double distance)
 */
 bool checkExplosionWasHindering(Explosive explosive, double distance)
 {
-    int fragmentCount = explosive.fragmentCount / computeAreaFromDistance(
-        distance
-    );
+    double area = computeAreaFromDistance(distance);
+    int fragmentCount = explosive.fragmentCount / area;
+
+    if (fragmentCount == 0){
+        double p = 1 - std::pow(1 - 1.0/area, explosive.fragmentCount);
+        fragmentCount = checkProbability(p) ? 1 : 0;
+    }
 
     for (int i = 0; i < fragmentCount; ++i)
     {
