@@ -17,15 +17,19 @@ void respondToKeyPress (World& world, Player& player, int key)
             world.active = false;
             break;
         case FORWARD_KEY:
+        case KEY_UP:
             movePlayer(world, player, NORTH);
             break;
         case BACKWARD_KEY:
+        case KEY_DOWN:
             movePlayer(world, player, SOUTH);
             break;
         case LEFT_KEY:
+        case KEY_LEFT:
             movePlayer(world, player, WEST);
             break;
         case RIGHT_KEY:
+        case KEY_RIGHT:
             movePlayer(world, player, EAST);
             break;
         case SHOOT_KEY:{
