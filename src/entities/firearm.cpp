@@ -36,7 +36,7 @@ Firearm::Firearm(FIREARM_TYPE type)
             magazine = Magazine(cartridgeType, 20, 19);
             break;
         }
-        case FIREARM_TYPE::BOLT_ACTION_RIFLE:{
+        case FIREARM_TYPE::REMINGTON_700:{
             reloadTime = 3;
             fastReloadTime = 1.5;
             chamberReloadDelay = 1;

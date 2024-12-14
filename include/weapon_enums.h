@@ -3,7 +3,7 @@
 enum class FIREARM_TYPE{
     SIG_M17,
     AR15,
-    BOLT_ACTION_RIFLE,
+    REMINGTON_700,
     RUGER_MK_IV,
     __COUNT,
 };

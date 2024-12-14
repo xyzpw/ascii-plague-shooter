@@ -82,7 +82,7 @@ void World::dropSupplies()
                         magazine->capacity * (magCount + 1) *
                             CARTRIDGE_223_REMINGTON_COST;
             break;
-        case FIREARM_TYPE::BOLT_ACTION_RIFLE:{
+        case FIREARM_TYPE::REMINGTON_700:{
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_30_06, 4, 4);
             magCount = 1;
             nextDropTime += magazine->capacity * (magCount + 1) *
