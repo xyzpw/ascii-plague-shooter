@@ -81,3 +81,8 @@ Example on compiling and running the game:
 $ make
 $ ./plague-shooter
 ```
+
+To allow colors:
+```bash
+$ ./plague-shooter --colors
+```
