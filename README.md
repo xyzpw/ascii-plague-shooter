@@ -34,6 +34,11 @@ Enemies may even be hindered when shot or hit by explosive fragments.
 #### Fast Reloading
 If there are multiple enemies and you can't reload, you can fast reload &#8212;
  you will lose the entire mag at the cost of reloading faster.
+
+If the firearm does not use detachable magazines, fast reloading loads a single
+ round, whereas regular reloading continues until the magazine is full or there
+ are no more rounds in the inventory.
+
 ##### Accuracy
 The further an enemy is being shot at is, the less chance of the shot being
  a successful hit.
