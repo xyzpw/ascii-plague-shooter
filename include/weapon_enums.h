@@ -16,6 +16,11 @@ enum class CARTRIDGE_TYPE{
     __COUNT,
 };
 
+enum class RELOAD_TYPE{
+    DETACHABLE_MAGAZINE,
+    DIRECT_LOAD,
+};
+
 enum class EXPLOSIVE_TYPE{
     M67_GRENADE,
     M18A1_CLAYMORE,

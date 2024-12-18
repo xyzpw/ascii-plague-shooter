@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include "weapon_enums.h"
+
 // Fraction of energy a bullet retains after penetrating an enemy.
 constexpr double BULLET_PENETRATE_KE_FACTOR = 0.8;
 constexpr double BULLET_PENETRATE_KE_FACTOR_HP = 0.1;
@@ -14,12 +17,18 @@ constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.4;
 constexpr double BULLET_KE_LOSS_30_06 = 6.32;
 constexpr double BULLET_KE_LOSS_22LR = 0.63;
 
-constexpr double HANDGUN_ACCURACY_DECAY = 0.054;
-constexpr double HANDGUN_ACCURACY_MULTIPLIER = 1.74;
-constexpr double RIFLE_ACCURACY_DECAY = 0.0135;
-constexpr double RIFLE_ACCURACY_MULTIPLIER = 1.7;
-constexpr double A_RIFLE_ACCURACY_DECAY = 0.02;
-constexpr double A_RIFLE_ACCURACY_MULTIPLIER = 1.69;
+inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_DECAYS = {
+    {FIREARM_TYPE::SIG_M17, 0.054},
+    {FIREARM_TYPE::AR15, 0.02},
+    {FIREARM_TYPE::REMINGTON_700, 0.0135},
+    {FIREARM_TYPE::RUGER_MK_IV, 0.054},
+};
+inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_MULTIPLIERS = {
+    {FIREARM_TYPE::SIG_M17, 1.74},
+    {FIREARM_TYPE::AR15, 1.69},
+    {FIREARM_TYPE::REMINGTON_700, 1.7},
+    {FIREARM_TYPE::RUGER_MK_IV, 1.74},
+};
 
 // Cost of each cartridge -- supply drop delay in seconds.
 constexpr double CARTRIDGE_9MM_COST = 0.96;

@@ -83,10 +83,12 @@ void World::dropSupplies()
                             CARTRIDGE_223_REMINGTON_COST;
             break;
         case FIREARM_TYPE::REMINGTON_700:{
-            magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_30_06, 4, 4);
-            magCount = 1;
-            nextDropTime += magazine->capacity * (magCount + 1) *
-                        CARTRIDGE_30_06_COST;
+            drop.items.ammunition[CARTRIDGE_TYPE::CARTRIDGE_30_06] =
+                                  firearm.magazine.capacity;
+
+            nextDropTime += drop.items.ammunition.at(CARTRIDGE_TYPE::CARTRIDGE_30_06);
+            nextDropTime += firearm.magazine.capacity;
+            nextDropTime *= CARTRIDGE_30_06_COST;
 
             // Add M17 with 2 additional magazines to the player's inventory.
             Firearm m17(FIREARM_TYPE::SIG_M17);

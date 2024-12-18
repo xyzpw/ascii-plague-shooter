@@ -17,6 +17,7 @@
 #include "math_utils.h"
 
 bool checkHasMag(Inventory inventory, CARTRIDGE_TYPE cartridge);
+bool checkHasAmmunition(Inventory&, CARTRIDGE_TYPE);
 
 std::unordered_map<double, std::string> magazineAscii{
     {0.125, "\u2581"},
@@ -33,7 +34,9 @@ void Player::updateHudText()
 {
     auto makeBulletsString = [&](){
         int maxLength = 10;
+
         Magazine& mag = activeWeapon.magazine;
+
         double bulletFrac = mag.cartridgeCount / static_cast<double>(mag.capacity);
         int charCount = bulletFrac * maxLength;
         if (charCount == 0 && activeWeapon.loadedRounds > 0){
@@ -49,9 +52,18 @@ void Player::updateHudText()
 
     auto makeMagString = [&](){
         std::string str = "";
+        if (this->activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD){
+            str = std::string(
+                getInventoryAmmunitionCount(
+                    inventory,
+                    activeWeapon.cartridgeType
+                ), '|'
+            );
+            return str;
+        }
         for (auto mag : inventory.magazines)
         {
-            if (mag.cartridgeType == activeWeapon.magazine.cartridgeType)
+            if (mag.cartridgeType == activeWeapon.cartridgeType)
             {
                 double carCount = mag.cartridgeCount;
                 double carCapacity = mag.capacity;
@@ -71,9 +83,12 @@ void Player::updateHudText()
         }
         return str;
     };
-    bool displayMags = checkHasMag(
-        inventory, activeWeapon.magazine.cartridgeType
-    );
+
+    bool displayMags = checkHasMag(inventory, activeWeapon.cartridgeType);
+    if (activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD){
+        displayMags = checkHasAmmunition(inventory, activeWeapon.cartridgeType);
+    }
+
     bool displayNoAmmo = !displayMags && activeWeapon.loadedRounds < 1;
     bool displayRounds = activeWeapon.loadedRounds >= 1;
 
@@ -144,6 +159,7 @@ void Player::shootFirearm()
     if (activeWeapon.magazine.cartridgeCount < 0){
         activeWeapon.magazine.cartridgeCount = 0;
     }
+
     activeWeapon.loadedRounds -= 1;
     if (activeWeapon.isChambered && activeWeapon.loadedRounds <= 0){
         activeWeapon.isChambered = false;
@@ -156,8 +172,15 @@ void Player::shootFirearm()
 
 void Player::reloadFirearm()
 {
-    bool hasMag = checkHasMag(inventory, activeWeapon.magazine.cartridgeType);
-    if (isReloading || !hasMag){
+    CARTRIDGE_TYPE cartridgeType = this->activeWeapon.cartridgeType;
+    bool hasMag = checkHasMag(this->inventory, cartridgeType);
+    bool hasCartridges = checkHasAmmunition(inventory, cartridgeType);
+    bool isMagDetachable = activeWeapon.feedSystem ==
+                            RELOAD_TYPE::DETACHABLE_MAGAZINE;
+
+    if (isMagDetachable && (isReloading || !hasMag) ||
+        !isMagDetachable && !hasCartridges)
+    {
         return;
     }
 
@@ -166,10 +189,38 @@ void Player::reloadFirearm()
 
     Magazine currentMag = activeWeapon.magazine;
 
-    activeWeapon.loadedRounds = activeWeapon.isChambered ? 1 : 0;
-    if (currentMag.cartridgeCount == 0){
+    if (isMagDetachable){
+        activeWeapon.loadedRounds = activeWeapon.isChambered ? 1 : 0;
+    }
+
+    // Fast reload if mag is detachable and empty.
+    if (isMagDetachable && currentMag.cartridgeCount == 0){
         isReloading = false;
         fastReloadFirearm();
+        return;
+    }
+
+    // Add rounds to internal magazine if magazine is not detachable.
+    if (!isMagDetachable){
+        usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
+
+        int rounds = activeWeapon.magazine.cartridgeCount;
+        int capacity = activeWeapon.magazine.capacity;
+
+        while (rounds < capacity &&
+                checkHasAmmunition(inventory, cartridgeType))
+        {
+            usleep(activeWeapon.loadRoundTime.value() * 1e6);
+            inventory.ammunition.at(cartridgeType) -= 1;
+            ++rounds;
+            activeWeapon.magazine.cartridgeCount += 1;
+            activeWeapon.loadedRounds += 1;
+        }
+
+        usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
+
+        isReloading = false;
+        activeWeapon.canShoot = true;
         return;
     }
 
@@ -205,8 +256,14 @@ void Player::reloadFirearm()
 
 void Player::fastReloadFirearm()
 {
+    CARTRIDGE_TYPE cartridgeType = activeWeapon.cartridgeType;
     bool hasMag = checkHasMag(inventory, activeWeapon.magazine.cartridgeType);
-    if (isReloading || !hasMag){
+    bool hasAmmunition = checkHasAmmunition(inventory, cartridgeType);
+    bool isMagDetachable = activeWeapon.feedSystem == RELOAD_TYPE::DETACHABLE_MAGAZINE;
+
+    if (isMagDetachable && (isReloading || !hasMag) ||
+        !isMagDetachable && !hasAmmunition)
+    {
         return;
     }
 
@@ -214,7 +271,32 @@ void Player::fastReloadFirearm()
     isReloading = true;
 
     Magazine& currentMag = activeWeapon.magazine;
-    activeWeapon.loadedRounds = activeWeapon.isChambered ? 1 : 0;
+
+    if (isMagDetachable){
+        activeWeapon.loadedRounds = activeWeapon.isChambered ? 1 : 0;
+    }
+
+    // Add 1 round to internal magazine.
+    if (!isMagDetachable){
+        if (activeWeapon.loadedRounds >= activeWeapon.magazine.capacity){
+            activeWeapon.isReloading = false;
+            activeWeapon.canShoot = true;
+            return;
+        }
+
+        usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
+
+        usleep(activeWeapon.loadRoundTime.value() * 1e6);
+        inventory.ammunition.at(cartridgeType) -= 1;
+        activeWeapon.magazine.cartridgeCount += 1;
+        activeWeapon.loadedRounds += 1;
+
+        usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
+
+        isReloading = false;
+        activeWeapon.canShoot = true;
+        return;
+    }
 
     usleep(activeWeapon.fastReloadTime * 1e6);
 
@@ -286,6 +368,7 @@ void Player::plantClaymore(World& world)
     if (isReloading || !hasClaymore){
         return;
     }
+
     Explosive claymore(EXPLOSIVE_TYPE::M18A1_CLAYMORE);
 
     for (auto cl = inventory.explosives.begin(); cl != inventory.explosives.end();)
@@ -374,6 +457,15 @@ void Player::pickupItem(World& world)
             inventory.magazines.push_back(item);
         }
 
+        for (auto item : drop->items.ammunition){
+            if (inventory.ammunition.count(item.first)){
+                inventory.ammunition[item.first] += item.second;
+            }
+            else{
+                inventory.ammunition[item.first] = item.second;
+            }
+        }
+
         world.supplyDrops.erase(drop);
         break;
     }
@@ -386,6 +478,7 @@ void Player::switchFirearm()
     {
         return;
     }
+
     FIREARM_TYPE currentType = activeWeapon.firearmType;
     inventory.firearms.push_back(activeWeapon);
 
@@ -431,4 +524,11 @@ bool checkHasMag(Inventory inventory, CARTRIDGE_TYPE cartridge)
         }
     }
     return false;
+}
+
+// Check if an inventory contains at least 1 cartridge.
+bool checkHasAmmunition(Inventory& inventory, CARTRIDGE_TYPE cartridge)
+{
+    int c = getInventoryAmmunitionCount(inventory, cartridge);
+    return c >= 1;
 }

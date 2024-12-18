@@ -17,6 +17,16 @@ int getInventoryMagCount(Inventory inventory, CARTRIDGE_TYPE type)
     return count;
 }
 
+int getInventoryAmmunitionCount(Inventory& inventory, CARTRIDGE_TYPE cartridge)
+{
+    int count = 0;
+
+    if (inventory.ammunition.count(cartridge)){
+        count = inventory.ammunition.at(cartridge);
+    }
+    return count;
+}
+
 bool checkInventoryHasFirearm(Inventory inventory, FIREARM_TYPE type)
 {
     for (auto firearm : inventory.firearms){
