@@ -33,6 +33,6 @@ inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_MULTIPLIE
 // Cost of each cartridge -- supply drop delay in seconds.
 constexpr double CARTRIDGE_9MM_COST = 0.96;
 constexpr double CARTRIDGE_9MM_HP_COST = 1.7;
-constexpr double CARTRIDGE_223_REMINGTON_COST = 1.4;
-constexpr double CARTRIDGE_223_REMINGTON_HP_COST = 2;
+constexpr double CARTRIDGE_223_REMINGTON_COST = 2.8;
+constexpr double CARTRIDGE_223_REMINGTON_HP_COST = 2.0;
 constexpr double CARTRIDGE_30_06_COST = 3.9;
