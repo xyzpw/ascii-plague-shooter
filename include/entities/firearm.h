@@ -18,7 +18,6 @@ struct Firearm{
     std::optional<double> loadRoundTime;
 
     int shootIntervalMs;
-    double isReloading = false;
     std::string shootAudioFile = "";
     double accuracyDecay;
     double accuracyScaleFactor;
