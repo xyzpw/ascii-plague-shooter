@@ -18,6 +18,8 @@ void handleFirearmShot(World& world, Player& player)
     int bulletKeLoss = player.activeWeapon.magazine.kineticEnergyLossPerMeter;
     bool isBulletHp = player.activeWeapon.magazine.isHollowPoint;
     bool isHighVelocity = player.activeWeapon.magazine.isHighVelocity;
+    const int PENETRATE_THRESHOLD =
+                player.activeWeapon.magazine.penetrateEnergyThreshold;
     const double PENETRATE_FACTOR = isBulletHp ? BULLET_PENETRATE_KE_FACTOR_HP :
             BULLET_PENETRATE_KE_FACTOR;
 
@@ -30,12 +32,16 @@ void handleFirearmShot(World& world, Player& player)
                             world, bulletPos, player.facingDirection);
 
     bool isFirstImpact = true;
+    int perforateCount = 0;
     HIT_LOCATION hitLocation;
 
     for (auto pos : bulletPositions)
     {
-        if (activeBulletKe < MINIMUM_LETHAL_ENERGY)
+        if (activeBulletKe < PENETRATE_THRESHOLD ||
+            perforateCount >= MAX_PERFORATE_COUNT)
+        {
             break;
+        }
 
         for (auto &inf : world.infected)
         {
@@ -70,6 +76,10 @@ void handleFirearmShot(World& world, Player& player)
                 activeBulletKe = 0;
             }
             impactKe -= activeBulletKe;
+
+            if (activeBulletKe > 0){
+                ++perforateCount;
+            }
 
             bool isFatal = checkBulletWasFatal(hitLocation, impactKe);
             if (!isFatal && (isBulletHp || isHighVelocity) &&

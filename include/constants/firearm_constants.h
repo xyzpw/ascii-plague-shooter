@@ -7,6 +7,9 @@
 constexpr double BULLET_PENETRATE_KE_FACTOR = 0.8;
 constexpr double BULLET_PENETRATE_KE_FACTOR_HP = 0.1;
 
+// Maximum number of enemies a bullet can perforate.
+constexpr int MAX_PERFORATE_COUNT = 3;
+
 constexpr int BULLET_KE_9MM = 536;
 constexpr int BULLET_KE_223_REMINGTON = 1738;
 constexpr int BULLET_KE_223_REMINGTON_HP = 1300;
