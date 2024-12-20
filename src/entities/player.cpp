@@ -448,6 +448,12 @@ void Player::pickupItem(World& world)
             {
                 switchFirearm();
             }
+            else if (activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD &&
+                     activeWeapon.loadedRounds == 0 &&
+                     !checkHasAmmunition(inventory, activeWeapon.cartridgeType))
+            {
+                switchFirearm();
+            }
         }
 
         for (auto item : drop->items.explosives){
