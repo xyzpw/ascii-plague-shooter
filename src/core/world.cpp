@@ -51,6 +51,7 @@ void World::dropSupplies()
     Firearm firearm(availableFirearmTypes.at(
         randIntInRange(0, availableFirearmTypes.size() - 1)
     ));
+
     std::optional<Magazine> magazine;
     int magCount = 0;
 
@@ -94,6 +95,7 @@ void World::dropSupplies()
     }
 
     drop.items.firearms.push_back(firearm);
+
     if (magazine.has_value()){
         for (int i = 0; i < magCount; ++i){
             drop.items.magazines.push_back(magazine.value());
