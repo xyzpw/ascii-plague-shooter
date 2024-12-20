@@ -279,7 +279,7 @@ void Player::fastReloadFirearm()
     // Add 1 round to internal magazine.
     if (!isMagDetachable){
         if (activeWeapon.loadedRounds >= activeWeapon.magazine.capacity){
-            activeWeapon.isReloading = false;
+            isReloading = false;
             activeWeapon.canShoot = true;
             return;
         }
