@@ -147,7 +147,7 @@ void Player::fixWeaponAppearance()
 
 void Player::shootFirearm()
 {
-    if (!activeWeapon.canShoot || activeWeapon.isReloading){
+    if (!activeWeapon.canShoot || isReloading){
         return;
     }
     canSwitchFirearm = false;
@@ -479,7 +479,7 @@ void Player::pickupItem(World& world)
 
 void Player::switchFirearm()
 {
-    if (inventory.firearms.size() == 0 || activeWeapon.isReloading ||
+    if (inventory.firearms.size() == 0 || isReloading ||
         !canSwitchFirearm)
     {
         return;
