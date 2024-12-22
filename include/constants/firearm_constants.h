@@ -15,10 +15,10 @@ constexpr int BULLET_KE_223_REMINGTON = 1738;
 constexpr int BULLET_KE_223_REMINGTON_HP = 1300;
 constexpr int BULLET_KE_30_06 = 3894;
 constexpr int BULLET_KE_22LR = 138;
-constexpr double BULLET_KE_LOSS_9MM = 1.4;
-constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.4;
+constexpr double BULLET_KE_LOSS_9MM = 1.5;
+constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.5;
 constexpr double BULLET_KE_LOSS_30_06 = 6.32;
-constexpr double BULLET_KE_LOSS_22LR = 0.63;
+constexpr double BULLET_KE_LOSS_22LR = 0.49;
 
 inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_DECAYS = {
     {FIREARM_TYPE::SIG_M17, 0.054},
