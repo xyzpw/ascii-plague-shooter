@@ -7,7 +7,7 @@ bool checkPosInClaymoreFragmentArea(Explosive, Position);
 bool checkClaymoreIsFacingPos(Explosive, Position);
 
 // Return the number of fragments at a given coordinate due to a claymore.
-int getClaymoreFragmentCountAtPos(Explosive claymore, Position pos)
+int getClaymoreFragmentCountAtPos(Explosive claymore, Position pos, int fragments)
 {
     bool isProperDirection = checkClaymoreIsFacingPos(claymore, pos);
     bool inFragmentArea = checkPosInClaymoreFragmentArea(claymore, pos);
@@ -19,19 +19,15 @@ int getClaymoreFragmentCountAtPos(Explosive claymore, Position pos)
     DIRECTION direction = claymore.facingDirection.value();
 
     bool isHorizontal = direction == EAST || direction == WEST;
+
     int posDiff = computePositionChange(claymorePos, pos, isHorizontal);
+
     int sectorArea = computeSectorAreaFromDistance(
         posDiff, CLAYMORE_FRAGMENT_DEGREES
     );
 
-    int fragmentCount = sectorArea == 0 ? claymore.fragmentCount :
-                        claymore.fragmentCount / sectorArea;
-
-    if (fragmentCount == 0){
-        double p = 1 - std::pow(1 - 1.0/sectorArea, claymore.fragmentCount);
-        fragmentCount = checkProbability(p) ? 1 : 0;
-    }
-
+    int fragmentCount = sectorArea == 0 ? fragments :
+                        randBinomialDist(fragments, 1.0 / sectorArea);
     return fragmentCount;
 }
 

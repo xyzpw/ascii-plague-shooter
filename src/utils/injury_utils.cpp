@@ -21,8 +21,7 @@ bool checkBulletWasFatal(const HIT_LOCATION location, const int joules)
 }
 
 // Return the rate at which an enemy gets closer to dying from delayed death.
-int calculateDelayedDeathLossRate(HIT_LOCATION location,
-    bool isHighVel, int joules)
+int calculateDelayedDeathLossRate(HIT_LOCATION location, bool isHighVel)
 {
     int rate = 0;
     int min, max;
@@ -92,28 +91,35 @@ bool checkShouldHinder(HIT_LOCATION location)
     }
 }
 
-bool checkExplosionWasFatal(Explosive explosive, double distance)
+bool checkExplosionWasFatal(Explosive explosive,
+                            int fragmentHits, double distance)
 {
     double area = computeAreaFromDistance(distance);
+
     int pascals = computeInverseSquareLaw(explosive.explosionPascals, distance);
-    int fragmentCount = area > 0 ? explosive.fragmentCount / area :
-                        explosive.fragmentCount;
-    if (fragmentCount == 0){
-        double p = 1 - std::pow(1 - 1.0/area, explosive.fragmentCount);
-        fragmentCount = checkProbability(p) ? 1 : 0;
-    }
 
-    int fragmentKe = explosive.fragmentKineticEnergy -
-        explosive.fragmentKineticEnergyLossPerMeter * distance;
+    int ke = explosive.fragmentKineticEnergy -
+             explosive.fragmentKineticEnergyLossPerMeter * distance;
 
-    double fragmentLethalProb =
-            calculateFragmentFatalProbability(fragmentKe, fragmentCount);
-    double explosionLethalProb = calculateExplosionFatalProbability(pascals);
+    double pFragmentLethal = calculateFragmentFatalProbability(ke, fragmentHits);
+    double pExplosionLethal = calculateExplosionFatalProbability(pascals);
 
-    bool wasFatal = checkProbability(fragmentLethalProb) ||
-                    checkProbability(explosionLethalProb);
+    bool wasFatal = checkProbability(pFragmentLethal) ||
+                    checkProbability(pExplosionLethal);
 
     return wasFatal;
+}
+
+int getFragmentDelayedDeathLossRate(int fragmentHits)
+{
+    int lossRate = 0;
+    for (int i = 0; i < fragmentHits; ++i){
+        HIT_LOCATION location = randHitLocation();
+        if (checkProbability(DELAYED_DEATH_PROBABILITY_FRAGMENT)){
+            lossRate += calculateDelayedDeathLossRate(location, false);
+        }
+    }
+    return lossRate;
 }
 
 bool checkExplosionRupturedEar(Explosive explosive, double distance)
@@ -130,23 +136,13 @@ bool checkExplosionRupturedEar(Explosive explosive, double distance)
  Generates a random hit location for each explosion fragment and
  checks if it is hindering.
 */
-bool checkExplosionWasHindering(Explosive explosive, double distance)
+bool checkExplosionWasHindering(int fragmentHits)
 {
-    double area = computeAreaFromDistance(distance);
-    int fragmentCount = explosive.fragmentCount / area;
-
-    if (fragmentCount == 0){
-        double p = 1 - std::pow(1 - 1.0/area, explosive.fragmentCount);
-        fragmentCount = checkProbability(p) ? 1 : 0;
-    }
-
-    for (int i = 0; i < fragmentCount; ++i)
-    {
-        HIT_LOCATION loc = randHitLocation();
-        if (checkShouldHinder(loc))
+    for (int i = 0; i < fragmentHits; ++i){
+        HIT_LOCATION rLocation = randHitLocation();
+        if (checkShouldHinder(rLocation))
             return true;
     }
-
     return false;
 }
 
@@ -179,4 +175,15 @@ double getBulletExitProbability(CARTRIDGE_TYPE cartridge)
         default:
             return 0.0;
     }
+}
+
+int determineFragmentHitCount(int fragments, double distance)
+{
+    double area = computeAreaFromDistance(distance);
+
+    double p = 1.0 / area;
+
+    int fragmentCount = randBinomialDist(fragments, p);
+
+    return fragmentCount;
 }

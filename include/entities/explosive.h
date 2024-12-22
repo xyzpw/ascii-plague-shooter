@@ -19,6 +19,7 @@ struct Explosive{
     int fragmentCount;
     int fragmentKineticEnergy;
     double fragmentKineticEnergyLossPerMeter;
+    double fragmentPenetrateEnergyThreshold;
     std::optional<int> _explosiveId;
     std::optional<DIRECTION> facingDirection;
     Explosive(EXPLOSIVE_TYPE type);

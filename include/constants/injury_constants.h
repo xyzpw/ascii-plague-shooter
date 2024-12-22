@@ -25,6 +25,8 @@ constexpr double DELAYED_DEATH_PROBABILITY_ABDOMEN_HP = 0.6;
 constexpr double DELAYED_DEATH_PROBABILITY_LIMBS = 0.1;
 constexpr double DELAYED_DEATH_PROBABILITY_LIMBS_HP = 0.3;
 
+constexpr double DELAYED_DEATH_PROBABILITY_FRAGMENT = 0.2;
+
 // Probability of bullet having an exit wound.
 constexpr double BULLET_EXIT_PROBABILITY_22LR = 0.1;
 constexpr double BULLET_EXIT_PROBABILITY_9MM = 0.6;

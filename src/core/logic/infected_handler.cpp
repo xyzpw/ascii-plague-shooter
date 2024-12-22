@@ -101,8 +101,7 @@ void handleFirearmShot(World& world, Player& player)
                     inf.delayedDeathStartEpoch = getEpochAsDecimal();
                 }
                 inf.delayedDeathLossRate +=
-                    calculateDelayedDeathLossRate(hitLocation, isHighVelocity,
-                                                    impactKe);
+                    calculateDelayedDeathLossRate(hitLocation, isHighVelocity);
             }
 
             // Check if the bullet wound was hindering.
@@ -153,21 +152,37 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
 
     int kineticEnergy = getGrenade().fragmentKineticEnergy;
     int fragmentCount = getGrenade().fragmentCount;
+    const int PENETRATE_THRESHOLD =
+                getGrenade().fragmentPenetrateEnergyThreshold;
     int energyLossPerMeter = getGrenade().fragmentKineticEnergyLossPerMeter;
+    int activeFragments = fragmentCount; // number of fragment projectiles.
 
     usleep(getGrenade().explosionDelay * 1e6);
 
     double playerDistance = getPositionDistance(
         player.position, getGrenade().position
     );
+    bool playerInLethalRange = computeAreaFromDistance(playerDistance) <=
+                               fragmentCount;
 
-    // Check if grenade was fatal to player if they are within fragmentation range.
-    if (computeAreaFromDistance(playerDistance) <= fragmentCount &&
-        checkExplosionWasFatal(getGrenade(), playerDistance))
+    // Check if grenade was fatal to player if they are within fragmentation
+    // range.
+    if (playerInLethalRange)
     {
-        player.gameStats.setEndGameMessage(GAME_END_MSG_GRENADE);
-        player.alive = false;
-        return;
+        int playerFragmentHits = determineFragmentHitCount(
+            activeFragments, playerDistance
+        );
+        activeFragments -= playerFragmentHits;
+        bool fatal = checkExplosionWasFatal(
+            getGrenade(), playerFragmentHits, playerDistance
+        );
+
+
+        if (fatal){
+            player.gameStats.setEndGameMessage(GAME_END_MSG_GRENADE);
+            player.alive = false;
+            return;
+        }
     }
 
     std::thread(playAudio,
@@ -175,20 +190,37 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
                     getGrenade().explodeCloseAudioFile :
                     getGrenade().explodeAudioFile).detach();
 
+    // Check if explosion was fatal for each infected.
     for (auto& inf : world.infected)
     {
         int distance = getPositionDistance(
             inf.position, getGrenade().position
         );
 
-        if (checkExplosionWasFatal(getGrenade(), distance)){
+        int fragmentHits = determineFragmentHitCount(activeFragments, distance);
+        activeFragments -= fragmentHits;
+        int hitKe = kineticEnergy - energyLossPerMeter * distance;
+
+        if (fragmentHits == 0 || hitKe < PENETRATE_THRESHOLD){
+            continue;
+        }
+
+        if (checkExplosionWasFatal(getGrenade(), fragmentHits, distance)){
             inf.markAsDead();
             player.gameStats.addKill();
             player.gameStats.addGrenadeKill();
             continue;
         }
 
-        if (checkExplosionWasHindering(getGrenade(), distance)){
+        int lossRate = getFragmentDelayedDeathLossRate(fragmentHits);
+        if (lossRate > 0){
+            if (!inf.delayedDeathStartEpoch.has_value()){
+                inf.delayedDeathStartEpoch = getEpochAsDecimal();
+            }
+            inf.delayedDeathLossRate += lossRate;
+        }
+
+        if (checkExplosionWasHindering(fragmentHits)){
             inf.makeHindered();
         }
     }
@@ -205,21 +237,29 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
 void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
 {
     Position claymorePosition = explosive.position;
-
     DIRECTION claymoreDirection = explosive.facingDirection.value();
+
+    int fragmentCount = explosive.fragmentCount;
     int kineticEnergy = explosive.fragmentKineticEnergy;
+    const int PENETRATE_THRESHOLD = explosive.fragmentPenetrateEnergyThreshold;
     int kineticEnergyLossPerMeter = explosive.fragmentKineticEnergyLossPerMeter;
+    int activeFragmentCount = fragmentCount;
+
     int explosionPascals = explosive.explosionPascals;
 
     // Check if explosion was lethal.
     auto checkFatal = [&](Position pos){
-        int fragments = getClaymoreFragmentCountAtPos(explosive, pos);
+        int fragments = getClaymoreFragmentCountAtPos(explosive, pos,
+                                                      activeFragmentCount);
+        activeFragmentCount -= fragments;
+
         int distance = getPositionDistance(pos, claymorePosition);
 
         int energy = kineticEnergy - kineticEnergyLossPerMeter * distance;
         int pascals = computeInverseSquareLaw(
             explosive.explosionPascals, distance
         );
+
         if (checkProbability(calculateFragmentFatalProbability(
             energy, fragments)))
         {
@@ -265,6 +305,18 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
 
     for (auto& inf : world.infected)
     {
+        double fragmentDistance = getPositionDistance(
+            claymorePosition, inf.position
+        );
+
+        int activeFragmentKe = kineticEnergy - fragmentDistance
+                               * kineticEnergyLossPerMeter;
+
+        if (activeFragmentKe < PENETRATE_THRESHOLD){
+            continue;
+        }
+
+        int fragmentCountBeforeCheck = activeFragmentCount;
         if (checkFatal(inf.position))
         {
             inf.markAsDead();
@@ -272,10 +324,18 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
             player.gameStats.addClaymoreKill();
             continue;
         }
+        int fragmentHitCount = fragmentCountBeforeCheck - activeFragmentCount;
+
+        int lossRate = getFragmentDelayedDeathLossRate(fragmentHitCount);
+        if (lossRate > 0){
+            if (!inf.delayedDeathStartEpoch.has_value()){
+                inf.delayedDeathStartEpoch = getEpochAsDecimal();
+            }
+            inf.delayedDeathLossRate += lossRate;
+        }
 
         // Check if fragments hindered infected.
-        int fragments = getClaymoreFragmentCountAtPos(explosive, inf.position);
-        for (int i = 0; i < fragments && !inf.isHindered; ++i){
+        for (int i = 0; i < fragmentHitCount && !inf.isHindered; ++i){
             if (checkShouldHinder(randHitLocation())){
                 inf.makeHindered();
             }

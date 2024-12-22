@@ -19,6 +19,7 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
             fragmentCount = M67_FRAGMENT_COUNT;
             fragmentKineticEnergy = M67_FRAGMENT_KE;
             fragmentKineticEnergyLossPerMeter = M67_FRAGMENT_KE_LOSS;
+            fragmentPenetrateEnergyThreshold = M67_PENETRATE_ENERGY_THRESHOLD;
             break;
         case EXPLOSIVE_TYPE::M18A1_CLAYMORE:
             explosionPascals = CLAYMORE_PASCALS;
@@ -29,6 +30,8 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
             fragmentCount = CLAYMORE_FRAGMENT_COUNT;
             fragmentKineticEnergy = CLAYMORE_FRAGMENT_KE;
             fragmentKineticEnergyLossPerMeter = CLAYMORE_FRAGMENT_KE_LOSS;
+            fragmentPenetrateEnergyThreshold =
+                    CLAYMORE_PENETRATE_ENERGY_THRESHOLD;
             break;
     }
 }
