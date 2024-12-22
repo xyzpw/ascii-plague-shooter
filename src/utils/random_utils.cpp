@@ -35,6 +35,12 @@ double randNormalDist(double mean, double sd)
     return dist(mtRandGen);
 }
 
+int randBinomialDist(int value, double probability)
+{
+    std::binomial_distribution<int> dist(value, probability);
+    return dist(mtRandGen);
+}
+
 /*
  Generates a random number from 0 to 1 and returns true if it is less than
  or equal to the specified probability.
