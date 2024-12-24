@@ -8,7 +8,8 @@
 #include "constants/player_constants.h"
 
 // Updates the grenades coordinates in real-time due to being thrown.
-void processGrenadeThrow(World& world, Explosive grenade)
+void processGrenadeThrow(World& world, Explosive grenade,
+                         int throwVelocity, int throwAngleDegrees)
 {
     auto getGrenadeIndex = [&](){
         int index = world.activeExplosives.size();
@@ -22,12 +23,6 @@ void processGrenadeThrow(World& world, Explosive grenade)
         }
         return index;
     };
-    int throwVelocity = randIntInRange(
-        PLAYER_THROW_VELOCITY_MIN, PLAYER_THROW_VELOCITY_MAX
-    );
-    int throwAngleDegrees = randIntInRange(
-        PLAYER_THROW_ANGLE_DEGREES_MIN, PLAYER_THROW_ANGLE_DEGREES_MAX
-    );
     int throwDistance = computeThrownObjectRange(
         throwVelocity, throwAngleDegrees);
 

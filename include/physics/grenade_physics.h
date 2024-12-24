@@ -3,4 +3,5 @@
 #include "world.h"
 #include "entities/explosive.h"
 
-void processGrenadeThrow(World& world, Explosive grenade);
+void processGrenadeThrow(World& world, Explosive grenade, int throwVelocity,
+                         int throwAngleDegrees);

@@ -14,7 +14,16 @@ void throwGrenade(World& world, Player& player)
     Explosive grenade = grenadeOptional.value();
     world.activeExplosives.push_back(grenade);
 
-    std::thread(processGrenadeThrow, std::ref(world), grenade).detach();
+    int velocity = randIntInRange(
+        PLAYER_THROW_VELOCITY_MIN, PLAYER_THROW_VELOCITY_MAX
+    );
+    int angle = randIntInRange(
+        PLAYER_THROW_ANGLE_DEGREES_MIN, PLAYER_THROW_ANGLE_DEGREES_MAX
+    );
+
+    std::thread(
+        processGrenadeThrow, std::ref(world), grenade, velocity, angle
+    ).detach();
     std::thread(
         handleGrenadeExplosion,
         std::ref(world),
