@@ -118,14 +118,7 @@ void handleFirearmShot(World& world, Player& player)
                     inf.position, hitLocation, player.facingDirection,
                     impactKe, muzzleInfDistance
                 );
-                if (inf.splatter.has_value()){
-                    for (auto p : s.positions){
-                        inf.splatter->positions.push_back(p);
-                    }
-                }
-                else{
-                    inf.splatter = s;
-                }
+                inf._updateSplatterEffect(s);
             }
         }
         activeBulletKe -= bulletKeLoss;

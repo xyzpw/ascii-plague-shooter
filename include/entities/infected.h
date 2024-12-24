@@ -26,5 +26,6 @@ struct Infected{
 
     void markAsDead();
     void _updateMovementVars();
+    void _updateSplatterEffect(SplatterEffect);
     void makeHindered();
 };
