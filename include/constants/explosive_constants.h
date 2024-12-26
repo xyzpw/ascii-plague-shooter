@@ -17,7 +17,7 @@ constexpr double M67_PENETRATE_ENERGY_THRESHOLD = 1.4;
 constexpr double CLAYMORE_PENETRATE_ENERGY_THRESHOLD = 1.6;
 
 constexpr double M67_EXPLOSION_DELAY_MIN = 4.0;
-constexpr double M67_EXPLOSION_DELAY_MAX = 5.5;
+constexpr double M67_EXPLOSION_DELAY_MAX = 5.0;
 constexpr double CLAYMORE_EXPLOSION_DELAY = 1.0;
 
 constexpr const char* GRENADE_CHAR = "\u2022";
