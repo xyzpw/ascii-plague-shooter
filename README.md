@@ -74,6 +74,7 @@ When rescue arrives, you have a limited amount of time to get to the aircraft
 - Fast reload: `R`
 - Equip item: `e`
 - Throw grenade: `g`
+- Throw grenade close: `G`
 - Plant claymore: `c`
 - Swap firearm: `q`
 - Quit game: `backspace`
