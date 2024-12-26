@@ -1,10 +1,14 @@
 #include <thread>
 #include <optional>
+#include <utility>
 #include "common.h"
 #include "physics/grenade_physics.h"
 #include "logic/infected_handler.h"
 
-void throwGrenade(World& world, Player& player)
+std::pair<int, int> getThrowVelocityRange(bool close);
+std::pair<int, int> getThrowAngleRange(bool close);
+
+void throwGrenade(World& world, Player& player, bool isCloseThrow)
 {
     auto grenadeOptional = player.throwGrenade(world);
     if (!grenadeOptional.has_value()){
@@ -14,11 +18,13 @@ void throwGrenade(World& world, Player& player)
     Explosive grenade = grenadeOptional.value();
     world.activeExplosives.push_back(grenade);
 
+    auto [VEL_MIN, VEL_MAX] = getThrowVelocityRange(isCloseThrow);
+    auto [ANGLE_MIN, ANGLE_MAX] = getThrowAngleRange(isCloseThrow);
     int velocity = randIntInRange(
-        PLAYER_THROW_VELOCITY_MIN, PLAYER_THROW_VELOCITY_MAX
+        VEL_MIN, VEL_MAX
     );
     int angle = randIntInRange(
-        PLAYER_THROW_ANGLE_DEGREES_MIN, PLAYER_THROW_ANGLE_DEGREES_MAX
+        ANGLE_MIN, ANGLE_MAX
     );
 
     std::thread(
@@ -52,4 +58,26 @@ void plantClaymore(World& world, Player& player)
     else{
         player.plantClaymore(world);
     }
+}
+
+std::pair<int, int> getThrowVelocityRange(bool close)
+{
+    int min = close ? PLAYER_THROW_VELOCITY_CLOSE_MIN :
+                      PLAYER_THROW_VELOCITY_MIN;
+    int max = close ? PLAYER_THROW_VELOCITY_CLOSE_MAX :
+                      PLAYER_THROW_VELOCITY_MAX;
+
+    std::pair<int, int> range = std::make_pair(min, max);
+    return range;
+}
+
+std::pair<int, int> getThrowAngleRange(bool close)
+{
+    int min = close ? PLAYER_THROW_ANGLE_DEGREES_CLOSE_MIN :
+                      PLAYER_THROW_ANGLE_DEGREES_MIN;
+    int max = close ? PLAYER_THROW_ANGLE_DEGREES_CLOSE_MAX :
+                      PLAYER_THROW_ANGLE_DEGREES_MAX;
+
+    std::pair<int, int> range = std::make_pair(min, max);
+    return range;
 }

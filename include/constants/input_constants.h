@@ -12,6 +12,7 @@ enum GameControls{
     RELOAD_KEY = static_cast<int>('r'),
     FAST_RELOAD_KEY = static_cast<int>('R'),
     GRENADE_KEY = static_cast<int>('g'),
+    GRENADE_KEY_CLOSE = static_cast<int>('G'),
     PICKUP_KEY = static_cast<int>('e'),
     SWITCH_WEAPON_KEY = static_cast<int>('q'),
     CLAYMORE_KEY = static_cast<int>('c'),

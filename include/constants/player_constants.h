@@ -2,9 +2,13 @@
 
 constexpr int PLAYER_THROW_VELOCITY_MIN = 16;
 constexpr int PLAYER_THROW_VELOCITY_MAX = 17;
+constexpr int PLAYER_THROW_VELOCITY_CLOSE_MIN = 11;
+constexpr int PLAYER_THROW_VELOCITY_CLOSE_MAX = 12;
 
 constexpr int PLAYER_THROW_ANGLE_DEGREES_MIN = 36;
 constexpr int PLAYER_THROW_ANGLE_DEGREES_MAX = 40;
+constexpr int PLAYER_THROW_ANGLE_DEGREES_CLOSE_MIN = 40;
+constexpr int PLAYER_THROW_ANGLE_DEGREES_CLOSE_MAX = 51;
 
 constexpr const char* PLAYER_CHAR = "O";
 constexpr const char* PLAYER_WEAPON_CHAR_VERTICAL = "|";

@@ -59,6 +59,10 @@ void respondToKeyPress (World& world, Player& player, int key)
             throwGrenade(world, player);
             break;
         }
+        case GRENADE_KEY_CLOSE:{
+            throwGrenade(world, player, true);
+            break;
+        }
         case CLAYMORE_KEY:{
             plantClaymore(world, player);
             break;
