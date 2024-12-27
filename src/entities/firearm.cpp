@@ -69,5 +69,21 @@ Firearm::Firearm(FIREARM_TYPE type)
             feedSystem = RELOAD_TYPE::DETACHABLE_MAGAZINE;
             break;
         }
+        case FIREARM_TYPE::BENELLI_M4:{
+            reloadTime = 3.0;
+            fastReloadTime = 2.0;
+            loadRoundTime = 0.5;
+            chamberReloadDelay = 0.1;
+            name = "Benelli M4";
+            shootAudioFile = "12ga_shoot.wav";
+            shootIntervalMs = 500;
+            accuracyDecay = FIREARM_ACCURACY_DECAYS.at(type);
+            accuracyScaleFactor = FIREARM_ACCURACY_MULTIPLIERS.at(type);
+            cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT;
+            loadedRounds = 7;
+            magazine = Magazine(cartridgeType, 7, 6);
+            feedSystem = RELOAD_TYPE::DIRECT_LOAD;
+            break;
+        }
     }
 }

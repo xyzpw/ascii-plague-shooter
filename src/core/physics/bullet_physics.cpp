@@ -1,6 +1,7 @@
 #include <vector>
 #include <optional>
 #include "physics/bullet_physics.h"
+#include "constants/math_constants.h"
 #include "world.h"
 #include "position.h"
 #include "world_enums.h"
@@ -66,4 +67,19 @@ std::optional<HIT_LOCATION> getBulletHitLocation(double distance, Firearm firear
     }
 
     return HIT_LOCATION::LIMBS;
+}
+
+int determineShotgunPelletHitCount(int pellets, double spread, double distance)
+{
+    double area = getSectorWidthAtDistance(distance, spread);
+    area *= area;
+    area *= PI;
+
+    double hitProbability = 1.0 / area;
+    if (hitProbability > 1.0){
+        hitProbability = 1.0;
+    }
+
+    int hitCount = randBinomialDist(pellets, hitProbability);
+    return hitCount;
 }

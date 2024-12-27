@@ -5,6 +5,7 @@ enum class FIREARM_TYPE{
     AR15,
     REMINGTON_700,
     RUGER_MK_IV,
+    BENELLI_M4,
     __COUNT,
 };
 
@@ -13,6 +14,7 @@ enum class CARTRIDGE_TYPE{
     CARTRIDGE_223_REMINGTON,
     CARTRIDGE_30_06,
     CARTRIDGE_22LR,
+    CARTRIDGE_12GA_00_BUCKSHOT,
     __COUNT,
 };
 

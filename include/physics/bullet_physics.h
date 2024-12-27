@@ -11,3 +11,4 @@
 
 std::vector<Position> getBulletProjectilePositions(World&, Position, DIRECTION);
 std::optional<HIT_LOCATION> getBulletHitLocation(double distance, Firearm);
+int determineShotgunPelletHitCount(int pellets, double spread, double distance);

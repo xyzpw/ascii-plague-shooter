@@ -92,6 +92,17 @@ void World::dropSupplies()
             nextDropTime *= CARTRIDGE_30_06_COST;
             break;
         }
+        case FIREARM_TYPE::BENELLI_M4:{
+            drop.items.ammunition[CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT] =
+                                  firearm.magazine.capacity * randIntInRange(1,2);
+
+            nextDropTime += drop.items.ammunition.at(
+                CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT
+            );
+            nextDropTime += firearm.magazine.capacity;
+            nextDropTime *= CARTRIDGE_BUCKSHOT_COST;
+            break;
+        }
     }
 
     drop.items.firearms.push_back(firearm);
