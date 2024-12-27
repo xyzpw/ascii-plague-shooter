@@ -443,14 +443,13 @@ void Player::pickupItem(World& world)
             inventory.firearms.push_back(item);
 
             // Switch firearms if the player has no ammo for the active firearm.
-            if (activeWeapon.loadedRounds == 0 &&
-                !checkHasMag(inventory, activeWeapon.magazine.cartridgeType))
-            {
-                switchFirearm();
-            }
-            else if (activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD &&
-                     activeWeapon.loadedRounds == 0 &&
-                     !checkHasAmmunition(inventory, activeWeapon.cartridgeType))
+            CARTRIDGE_TYPE cartridge = activeWeapon.cartridgeType;
+            bool isDirectLoad = activeWeapon.feedSystem ==
+                                RELOAD_TYPE::DIRECT_LOAD;
+            bool hasExtraAmmo = isDirectLoad ?
+                                checkHasAmmunition(inventory, cartridge) :
+                                checkHasMag(inventory, cartridge);
+            if (activeWeapon.loadedRounds == 0 && !hasExtraAmmo)
             {
                 switchFirearm();
             }
