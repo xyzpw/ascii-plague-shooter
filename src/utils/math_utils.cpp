@@ -24,10 +24,10 @@ double computeSectorAreaFromDistance(double distance, int degrees)
     return area;
 }
 
-double getSectorWidthAtDistance(double distance, int degrees)
+double getSectorWidthAtDistance(double distance, double degrees)
 {
     double radians = degrees * PI / 180;
-    double width = std::sin(radians / 2) * 2 * distance;
+    double width = std::sin(radians / 2.0) * 2 * distance;
     return width;
 }
 
