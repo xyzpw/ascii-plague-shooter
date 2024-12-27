@@ -215,10 +215,15 @@ void Player::reloadFirearm()
             ++rounds;
             activeWeapon.magazine.cartridgeCount += 1;
             activeWeapon.loadedRounds += 1;
+            if (!activeWeapon.isChambered){
+                activeWeapon.magazine.cartridgeCount -= 1;
+                activeWeapon.isChambered = true;
+            }
         }
 
         usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
 
+        activeWeapon.isChambered = true;
         isReloading = false;
         activeWeapon.canShoot = true;
         return;
@@ -278,7 +283,9 @@ void Player::fastReloadFirearm()
 
     // Add 1 round to internal magazine.
     if (!isMagDetachable){
-        if (activeWeapon.loadedRounds >= activeWeapon.magazine.capacity){
+        if (activeWeapon.loadedRounds >=
+            activeWeapon.magazine.capacity + 1)
+        {
             isReloading = false;
             activeWeapon.canShoot = true;
             return;
@@ -291,8 +298,14 @@ void Player::fastReloadFirearm()
         activeWeapon.magazine.cartridgeCount += 1;
         activeWeapon.loadedRounds += 1;
 
+        if (!activeWeapon.isChambered){
+            activeWeapon.magazine.cartridgeCount -= 1;
+            activeWeapon.isChambered = true;
+        }
+
         usleep(activeWeapon.chamberReloadDelay / 2.0 * 1e6);
 
+        activeWeapon.isChambered = true;
         isReloading = false;
         activeWeapon.canShoot = true;
         return;

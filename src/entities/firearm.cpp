@@ -50,7 +50,7 @@ Firearm::Firearm(FIREARM_TYPE type)
             accuracyScaleFactor = FIREARM_ACCURACY_MULTIPLIERS.at(type);
             cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_30_06;
             loadedRounds = 4;
-            magazine = Magazine(cartridgeType, 4, 4);
+            magazine = Magazine(cartridgeType, 4, 3);
             feedSystem = RELOAD_TYPE::DIRECT_LOAD;
             break;
         }
