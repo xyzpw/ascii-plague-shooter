@@ -37,7 +37,7 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
             this->kineticEnergyLossPerMeter = PELLET_KE_LOSS_12GA_00_BUCKSHOT;
             this->penetrateEnergyThreshold = 4;
             this->pelletsPerShell = PELLET_COUNT_12GA_00_BUCKSHOT;
-            this->pelletSpreadDegrees = PELLET_12GA_00_BUCKSHOT_SPREAD;
+            this->pelletSpreadDegrees = PELLET_SPREAD_SHOTGUN;
             this->usesPellets = true;
     }
 }

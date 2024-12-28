@@ -24,8 +24,8 @@ constexpr double PELLET_KE_LOSS_12GA_00_BUCKSHOT = 2.5;
 
 constexpr int PELLET_COUNT_12GA_00_BUCKSHOT = 9;
 
-// Spread of 12 ga. --in degrees-- when fired.
-constexpr double PELLET_12GA_00_BUCKSHOT_SPREAD = 1.59;
+// Spread of shotgun pellets --in degrees-- when fired.
+constexpr double PELLET_SPREAD_SHOTGUN = 2.55;
 
 inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_DECAYS = {
     {FIREARM_TYPE::SIG_M17, 0.054},
