@@ -92,3 +92,8 @@ To allow colors:
 ```bash
 $ ./plague-shooter --colors
 ```
+
+To reduce rescue arrival time:
+```bash
+$ ./plague-shooter --quick
+```
