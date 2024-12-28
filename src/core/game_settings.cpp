@@ -8,4 +8,7 @@ void GameSettings::setSettingsFromArgs(
     if (args.count("colors")){
         this->colors = true;
     }
+    if (args.count("quick")){
+        this->quickGame = true;
+    }
 }

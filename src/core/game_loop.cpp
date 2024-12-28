@@ -23,6 +23,13 @@
 
 void playGame(World world)
 {
+    // Reduce time until rescue if quick game is enabled.
+    if (world.settings.quickGame){
+        double subtractAmount = RESCUE_ARRIVAL_ETA / 2.0;
+        world.rescue.arrivalEpoch -= subtractAmount;
+        world.rescue.escapeEpoch -= subtractAmount;
+    }
+
     initializeAudio();
     Player myPlayer;
 
