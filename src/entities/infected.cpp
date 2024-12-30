@@ -33,3 +33,12 @@ void Infected::_updateSplatterEffect(SplatterEffect splatter)
         this->splatter->positions.push_back(it);
     }
 }
+
+// Add or update delayed death with more loss rate.
+void Infected::_updateDelayedDeath(int lossRate)
+{
+    if (!this->delayedDeathStartEpoch.has_value()){
+        delayedDeathStartEpoch = getEpochAsDecimal();
+    }
+    delayedDeathLossRate += lossRate;
+}
