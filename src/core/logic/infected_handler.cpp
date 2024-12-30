@@ -102,11 +102,10 @@ void handleFirearmShot(World& world, Player& player)
             else if (checkShouldDelayedDeath(hitLocation, isBulletHp) ||
                         isHighVelocity)
             {
-                if (!inf.delayedDeathStartEpoch.has_value()){
-                    inf.delayedDeathStartEpoch = getEpochAsDecimal();
-                }
-                inf.delayedDeathLossRate +=
-                    calculateDelayedDeathLossRate(hitLocation, isHighVelocity);
+                int rate = calculateDelayedDeathLossRate(
+                    hitLocation, isHighVelocity
+                );
+                inf._updateDelayedDeath(rate);
             }
 
             // Check if the bullet wound was hindering.
