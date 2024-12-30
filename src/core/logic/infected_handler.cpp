@@ -129,108 +129,149 @@ void handleFirearmShot(World& world, Player& player)
     }
 }
 
+// Handle what happens to infected based on shotgun pellet trajectories.
 void handleShotgunPelletShot(World& world, Player& player)
 {
-    int activePelletCount = player.activeWeapon.magazine.pelletsPerShell.value();
-    int activePelletKe = player.activeWeapon.magazine.kineticEnergy;
-    const double PELLET_KE_LOSS =
-              player.activeWeapon.magazine.kineticEnergyLossPerMeter;
+    Magazine &activeMag = player.activeWeapon.magazine;
+    DIRECTION facingDirection = player.facingDirection;
+    bool isFacingDirectionVertical =
+         facingDirection == NORTH || facingDirection == SOUTH;
 
-    const int PENETRATE_THRESHOLD =
-              player.activeWeapon.magazine.penetrateEnergyThreshold;
-    const double PELLET_SPREAD =
-              player.activeWeapon.magazine.pelletSpreadDegrees.value();
+    const int PENETRATE_THRESHOLD = activeMag.penetrateEnergyThreshold;
+    const double PELLET_KE = activeMag.kineticEnergy;
+    const double PELLET_KE_LOSS = activeMag.kineticEnergyLossPerMeter;
 
-    std::vector<Position> bulletPositions = getBulletProjectilePositions(
-        world, player.weaponPosition, player.facingDirection
+    int activePelletCount = activeMag.pelletsPerShell.value();
+
+    auto pelletTrajectories = getShotgunPelletTrajectories(
+        world, player.weaponPosition,
+        facingDirection, player.activeWeapon
     );
+    if (pelletTrajectories.size() == 0){
+        return;
+    }
+    const Position MUZZLE_POS = getBulletProjectilePositions(
+        world, player.weaponPosition, facingDirection
+    ).at(0);
 
-    HIT_LOCATION hitLocation;
-    bool isFirstImpact = true;
-    int perforateCount = 0;
+    // Inactive columns/rows, used so infected behind another will not be hit.
+    std::vector<int> inactivePelletCols;
+    std::vector<int> inactivePelletRows;
 
-    for (auto pos : bulletPositions)
+    auto checkInactivePos = [&](Position pos)
     {
-        if (activePelletCount <= 0 || activePelletKe < PENETRATE_THRESHOLD ||
-            perforateCount >= MAX_PERFORATE_COUNT)
-        {
+        if (isFacingDirectionVertical){
+            auto temp = std::count(
+                inactivePelletCols.begin(), inactivePelletCols.end(), pos.column
+            );
+            if (temp > 0)
+                return true;
+        } else {
+            auto temp = std::count(
+                inactivePelletRows.begin(), inactivePelletRows.end(), pos.row
+            );
+            if (temp > 0)
+                return true;
+        }
+        return false;
+    };
+
+    bool hasImpacted = false;
+    HIT_LOCATION hitLocation;
+    for (auto trajectory : pelletTrajectories)
+    {
+        if (activePelletCount < 1){
             break;
         }
 
-        for (auto &inf : world.infected)
-        {
-            if (!inf.alive || inf.position != pos){
-                continue;
-            }
-
-            double playerInfDistance = getPositionDistance(
-                player.position, inf.position
-            );
-            double muzzleInfDistance = getPositionDistance(
-                bulletPositions.at(0), inf.position
-            );
-
-            // Determine hit location of pellets.
-            if (isFirstImpact){
-                std::optional<HIT_LOCATION> loc = getBulletHitLocation(
-                    muzzleInfDistance, player.activeWeapon
-                );
-                hitLocation = loc.has_value() ? loc.value() : HIT_LOCATION::ABDOMEN;
-                if (hitLocation == HIT_LOCATION::LIMBS){
-                    hitLocation = HIT_LOCATION::ABDOMEN;
+        for (auto posInfo : trajectory){
+            for (auto &inf : world.infected)
+            {
+                if (inf.position != posInfo.first || !inf.alive){
+                    continue;
                 }
-                isFirstImpact = false;
-            }
-
-            int pelletHits = determineShotgunPelletHitCount(
-                activePelletCount, PELLET_SPREAD, muzzleInfDistance
-            );
-            activePelletCount -= pelletHits;
-
-            // Check if the impact was fatal for each pellet that hit.
-            bool isFatal = false;
-            for (int i = 0; i < pelletHits && !isFatal; ++i){
-                isFatal = checkBulletWasFatal(hitLocation, activePelletKe);
-            }
-            if (isFatal){
-                inf.markAsDead();
-                player.gameStats.addKill();
-                if (hitLocation == HIT_LOCATION::HEAD)
-                    player.gameStats.addHeadshot();
-            } else {
-                // Determine if delayed death should occur and apply
-                // (for each pellet).
-                for (int i = 0; i < pelletHits; ++i)
+                else if (activePelletCount < 1){
+                    break;
+                }
+                else if (checkInactivePos(inf.position)){
+                    break;
+                }
+                if (isFacingDirectionVertical &&
+                    player.position.column == inf.position.column)
                 {
-                    if (checkShouldDelayedDeath(hitLocation, false)){
-                        if (!inf.delayedDeathStartEpoch.has_value()){
-                            inf.delayedDeathStartEpoch = getEpochAsDecimal();
-                        }
-                        inf.delayedDeathLossRate +=
-                            calculateDelayedDeathLossRate(hitLocation, false);
+                    inactivePelletCols.push_back(inf.position.column);
+                }
+                else if (!isFacingDirectionVertical &&
+                         player.position.row == inf.position.row)
+                {
+                    inactivePelletRows.push_back(inf.position.row);
+                }
+
+                double muzzleInfDistance = getPositionDistance(
+                    MUZZLE_POS, inf.position
+                );
+
+                int impactKe = PELLET_KE - PELLET_KE_LOSS * muzzleInfDistance;
+                if (impactKe < PENETRATE_THRESHOLD){
+                    break;
+                }
+
+                if (!hasImpacted){
+                    std::optional<HIT_LOCATION> loc = getBulletHitLocation(
+                        muzzleInfDistance, player.activeWeapon
+                    );
+                    hitLocation = loc.has_value() ? loc.value() :
+                                  HIT_LOCATION::ABDOMEN;
+                    if (hitLocation == HIT_LOCATION::LIMBS){
+                        hitLocation = HIT_LOCATION::ABDOMEN;
+                    }
+
+                    hasImpacted = true;
+                }
+
+                // Check if pellet impact was fatal.
+                bool isFatal = false;
+                for (int i = 0; i < posInfo.second && !isFatal; ++i){
+                    isFatal = checkBulletWasFatal(hitLocation, impactKe);
+                }
+                if (isFatal){
+                    inf.markAsDead();
+                    player.gameStats.addKill();
+                    if (hitLocation == HIT_LOCATION::HEAD){
+                        player.gameStats.addHeadshot();
                     }
                 }
-            }
-
-            // Check if each pellet has hindered the infected.
-            for (int i = 0; i < pelletHits && !inf.isHindered; ++i){
-                if (checkShouldHinder(hitLocation)){
-                    inf.makeHindered();
+                else if (checkShouldDelayedDeath(hitLocation, false)){
+                    int rate = 0;
+                    for (int i = 0; i < posInfo.second; ++i){
+                        rate += calculateDelayedDeathLossRate(hitLocation, false);
+                    }
+                    inf._updateDelayedDeath(rate);
                 }
-            }
 
-            // Only add splatter if headshot and within 1 meter from muzzle.
-            if (hitLocation == HIT_LOCATION::HEAD && muzzleInfDistance <= 1){
-                SplatterEffect s;
-                s.positions = getSplatterPositions(
-                    inf.position, hitLocation, player.facingDirection,
-                    activePelletKe, muzzleInfDistance
-                );
-                inf._updateSplatterEffect(s);
-            }
+                if (inf.alive){
+                    // Check if any of the hitting pellets should hinder.
+                    for (int i = 0; i < posInfo.second && !inf.isHindered; ++i){
+                        if (checkShouldHinder(hitLocation)){
+                            inf.makeHindered();
+                        }
+                    }
+                }
 
+                // Only add splatter if headshot and within 1 meter from muzzle.
+                if (hitLocation == HIT_LOCATION::HEAD && muzzleInfDistance <= 1)
+                {
+                    SplatterEffect s;
+                    s.positions = getSplatterPositions(
+                        inf.position, hitLocation, facingDirection,
+                        impactKe, muzzleInfDistance
+                    );
+                    inf._updateSplatterEffect(s);
+                }
+
+                activePelletCount -= posInfo.second;
+            }
         }
-        activePelletKe -= PELLET_KE_LOSS;
     }
 }
 
