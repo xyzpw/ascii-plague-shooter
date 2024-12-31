@@ -18,6 +18,12 @@ enum class CARTRIDGE_TYPE{
     __COUNT,
 };
 
+enum class AMMO_TYPE{
+    STANDARD_BULLET,
+    HOLLOW_POINT,
+    PELLET_SPREAD,
+};
+
 enum class RELOAD_TYPE{
     DETACHABLE_MAGAZINE,
     DIRECT_LOAD,

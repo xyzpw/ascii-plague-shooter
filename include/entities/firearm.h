@@ -9,8 +9,9 @@ struct Firearm{
     FIREARM_TYPE firearmType;
     std::string name;
     int magazineCapacity;
-    bool isChambered = true;
-    bool canShoot = true;
+    bool isChambered;
+    AMMO_TYPE chamberRoundType;
+    bool canShoot;
 
     double reloadTime;
     double fastReloadTime;
@@ -18,7 +19,7 @@ struct Firearm{
     std::optional<double> loadRoundTime;
 
     int shootIntervalMs;
-    std::string shootAudioFile = "";
+    std::string shootAudioFile;
     double accuracyDecay;
     double accuracyScaleFactor;
     CARTRIDGE_TYPE cartridgeType;

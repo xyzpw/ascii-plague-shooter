@@ -55,12 +55,19 @@ void World::dropSupplies()
     std::optional<Magazine> magazine;
     int magCount = 0;
 
+    auto makeFirearmAndMagHollowPoint = [&](){
+        firearm.magazine.ammoType = AMMO_TYPE::HOLLOW_POINT;
+        firearm.chamberRoundType = AMMO_TYPE::HOLLOW_POINT;
+        if (magazine.has_value()){
+            magazine->ammoType = AMMO_TYPE::HOLLOW_POINT;
+        }
+    };
+
     switch (firearm.firearmType){
         case FIREARM_TYPE::SIG_M17:{
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_9MM, 17, 17);
-            magazine->isHollowPoint = true;
 
-            firearm.magazine.isHollowPoint = true;
+            makeFirearmAndMagHollowPoint();
 
             magCount = 2;
             nextDropTime += magazine->capacity * (magCount + 1) *
@@ -69,19 +76,21 @@ void World::dropSupplies()
         }
         case FIREARM_TYPE::AR15:
             magazine = Magazine(CARTRIDGE_TYPE::CARTRIDGE_223_REMINGTON, 20, 20);
-            magazine->isHollowPoint = checkProbability(0.5);
-            if (magazine->isHollowPoint){
+            if (checkProbability(0.5)){
+                makeFirearmAndMagHollowPoint();
                 magazine->kineticEnergy = BULLET_KE_223_REMINGTON_HP;
             }
 
             firearm.magazine = magazine.value();
             magCount = randIntInRange(1, 3);
 
-            nextDropTime += magazine->isHollowPoint ?
-                        magazine->capacity * (magCount + 1) *
-                            CARTRIDGE_223_REMINGTON_HP_COST :
-                        magazine->capacity * (magCount + 1) *
-                            CARTRIDGE_223_REMINGTON_COST;
+            nextDropTime = magazine->capacity * (magCount + 1);
+            if (magazine->ammoType == AMMO_TYPE::HOLLOW_POINT){
+                nextDropTime *= CARTRIDGE_223_REMINGTON_HP_COST;
+            }
+            else {
+                nextDropTime *= CARTRIDGE_223_REMINGTON_COST;
+            }
             break;
         case FIREARM_TYPE::REMINGTON_700:{
             drop.items.ammunition[CARTRIDGE_TYPE::CARTRIDGE_30_06] =
@@ -98,8 +107,7 @@ void World::dropSupplies()
 
             nextDropTime += drop.items.ammunition.at(
                 CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT
-            );
-            nextDropTime += firearm.magazine.capacity;
+            ) + firearm.magazine.capacity;
             nextDropTime *= CARTRIDGE_BUCKSHOT_COST;
             break;
         }

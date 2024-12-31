@@ -13,7 +13,7 @@
 
 void handleFirearmShot(World& world, Player& player)
 {
-    if (player.activeWeapon.magazine.usesPellets){
+    if (player.activeWeapon.magazine.ammoType == AMMO_TYPE::PELLET_SPREAD){
         handleShotgunPelletShot(world, player);
         return;
     }
@@ -21,7 +21,8 @@ void handleFirearmShot(World& world, Player& player)
     Position bulletPos = player.weaponPosition;
     int activeBulletKe = player.activeWeapon.magazine.kineticEnergy;
     int bulletKeLoss = player.activeWeapon.magazine.kineticEnergyLossPerMeter;
-    bool isBulletHp = player.activeWeapon.magazine.isHollowPoint;
+    bool isBulletHp = player.activeWeapon.chamberRoundType
+                    == AMMO_TYPE::HOLLOW_POINT;
     bool isHighVelocity = player.activeWeapon.magazine.isHighVelocity;
     const int PENETRATE_THRESHOLD =
                 player.activeWeapon.magazine.penetrateEnergyThreshold;

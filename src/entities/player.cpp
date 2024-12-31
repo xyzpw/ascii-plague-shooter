@@ -44,7 +44,7 @@ void Player::updateHudText()
         }
         std::string str = std::string("[") + std::string(charCount, '|');
         str += std::string(maxLength - charCount, ' ') + "]";
-        if (mag.isHollowPoint){
+        if (activeWeapon.chamberRoundType == AMMO_TYPE::HOLLOW_POINT){
             str += " HP";
         }
         return str;
@@ -164,6 +164,9 @@ void Player::shootFirearm()
     if (activeWeapon.isChambered && activeWeapon.loadedRounds <= 0){
         activeWeapon.isChambered = false;
     }
+    else if (activeWeapon.isChambered){
+        activeWeapon.chamberRoundType = activeWeapon.magazine.ammoType;
+    }
 
     usleep(activeWeapon.shootIntervalMs * 1e3);
     canSwitchFirearm = true;
@@ -217,6 +220,7 @@ void Player::reloadFirearm()
             activeWeapon.loadedRounds += 1;
             if (!activeWeapon.isChambered){
                 activeWeapon.magazine.cartridgeCount -= 1;
+                activeWeapon.chamberRoundType = activeWeapon.magazine.ammoType;
                 activeWeapon.isChambered = true;
             }
         }
@@ -335,6 +339,7 @@ void Player::fastReloadFirearm()
     if (!activeWeapon.isChambered){
         usleep(activeWeapon.chamberReloadDelay * 1e6);
         currentMag.cartridgeCount -= 1;
+        activeWeapon.chamberRoundType = currentMag.ammoType;
         activeWeapon.isChambered = true;
     }
     isReloading = false;

@@ -8,6 +8,7 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
     this->capacity = maxRounds;
     this->cartridgeCount = rounds;
     this->isHighVelocity = false;
+    ammoType = AMMO_TYPE::STANDARD_BULLET;
 
     switch (cartridge){
         case CARTRIDGE_TYPE::CARTRIDGE_9MM:
@@ -38,6 +39,6 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
             this->penetrateEnergyThreshold = 4;
             this->pelletsPerShell = PELLET_COUNT_12GA_00_BUCKSHOT;
             this->pelletSpreadDegrees = PELLET_SPREAD_SHOTGUN;
-            this->usesPellets = true;
+            this->ammoType = AMMO_TYPE::PELLET_SPREAD;
     }
 }
