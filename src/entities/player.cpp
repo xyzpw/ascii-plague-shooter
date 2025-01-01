@@ -469,7 +469,10 @@ void Player::pickupItem(World& world)
                                 checkHasMag(inventory, cartridge);
             if (activeWeapon.loadedRounds == 0 && !hasExtraAmmo)
             {
-                switchFirearm();
+                activeWeapon = inventory.firearms.at(
+                    inventory.firearms.size() - 1
+                );
+                removeEmptyFirearmsFromInventory(inventory);
             }
         }
 
