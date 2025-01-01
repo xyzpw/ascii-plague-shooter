@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 #include "inventory_utils.h"
 #include "entities/inventory.h"
 #include "weapon_enums.h"
@@ -35,6 +36,23 @@ bool checkInventoryHasFirearm(Inventory inventory, FIREARM_TYPE type)
         }
     }
     return false;
+}
+
+void removeEmptyFirearmsFromInventory(Inventory& inventory)
+{
+    std::vector<Firearm>& firearms = inventory.firearms;
+
+    auto it = std::remove_if(firearms.begin(), firearms.end(), [&](Firearm f){
+        CARTRIDGE_TYPE cartridge = f.cartridgeType;
+
+        bool isEmpty = f.loadedRounds == 0;
+        bool hasAmmo = getInventoryAmmunitionCount(inventory, cartridge);
+        bool hasMags = getInventoryMagCount(inventory, cartridge);
+
+        return isEmpty && !hasAmmo && !hasMags;
+    });
+
+    firearms.erase(it, firearms.end());
 }
 
 /*
