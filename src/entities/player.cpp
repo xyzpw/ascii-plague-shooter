@@ -18,6 +18,9 @@
 
 bool checkHasMag(Inventory inventory, CARTRIDGE_TYPE cartridge);
 bool checkHasAmmunition(Inventory&, CARTRIDGE_TYPE);
+void handleInventoryPickupExistingFirearm(
+    Inventory&, Firearm& activeWeapon, Firearm
+);
 
 std::unordered_map<double, std::string> magazineAscii{
     {0.125, "\u2581"},
@@ -454,7 +457,9 @@ void Player::pickupItem(World& world)
             if (checkInventoryHasFirearm(inventory, item.firearmType) ||
                 activeWeapon.firearmType == item.firearmType)
             {
-                inventory.magazines.push_back(item.magazine);
+                handleInventoryPickupExistingFirearm(
+                    inventory, activeWeapon, item
+                );
                 continue;
             }
 
@@ -545,4 +550,62 @@ bool checkHasAmmunition(Inventory& inventory, CARTRIDGE_TYPE cartridge)
 {
     int c = getInventoryAmmunitionCount(inventory, cartridge);
     return c >= 1;
+}
+
+
+// Handles what should happen if the player picks up a firearm they already have.
+void handleInventoryPickupExistingFirearm(
+     Inventory& inventory, Firearm& activeWeapon, Firearm firearm)
+{
+    FIREARM_TYPE firearmType = firearm.firearmType;
+    CARTRIDGE_TYPE cartridge = activeWeapon.cartridgeType;
+
+    bool isDirectLoad = firearm.feedSystem == RELOAD_TYPE::DIRECT_LOAD;
+    bool isActiveWeaponSameType = activeWeapon.firearmType == firearmType;
+    bool inventoryHasFirearm = checkInventoryHasFirearm(inventory, firearmType);
+    bool isEmpty = activeWeapon.loadedRounds == 0;
+    bool hasAmmo = checkHasAmmunition(inventory, cartridge)
+                   || checkHasMag(inventory, cartridge);
+
+    // Take ammunition from firearm picked up.
+    auto addAmmunition = [&](){
+        if (isDirectLoad){
+            int newAmmoCount = getInventoryAmmunitionCount(inventory, cartridge);
+            newAmmoCount += firearm.loadedRounds;
+            inventory.ammunition[cartridge] = newAmmoCount;
+        }
+        else{
+            inventory.magazines.push_back(firearm.magazine);
+        }
+    };
+
+    if (isActiveWeaponSameType)
+    {
+        if (isEmpty){
+            activeWeapon = firearm;
+        }
+        else{
+            addAmmunition();
+        }
+    }
+    else{
+        // Remove existing firearm from inventory and add new one if it has
+        // no loaded rounds.
+        bool firearmWasRemoved = false;
+        for (auto it = inventory.firearms.begin();
+             it != inventory.firearms.end(); ++it)
+        {
+            if (it->firearmType == firearm.firearmType && it->loadedRounds == 0){
+                inventory.firearms.erase(it);
+                firearmWasRemoved = true;
+                break;
+            }
+        }
+        if (firearmWasRemoved){
+            inventory.firearms.push_back(firearm);
+        }
+        else{
+            addAmmunition();
+        }
+    }
 }
