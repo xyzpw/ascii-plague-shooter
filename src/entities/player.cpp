@@ -519,24 +519,7 @@ void Player::switchFirearm()
     }
 
     // Remove firearms from inventory if no ammo exists.
-    for (auto firearm = inventory.firearms.begin();
-         firearm != inventory.firearms.end();)
-    {
-        CARTRIDGE_TYPE cartridge = firearm->cartridgeType;
-        bool isDirectLoad = firearm->feedSystem == RELOAD_TYPE::DIRECT_LOAD;
-        bool hasExtraAmmo = isDirectLoad ?
-                            checkHasAmmunition(inventory, cartridge) :
-                            checkHasMag(inventory, cartridge);
-
-        if (firearm->loadedRounds == 0 && !hasExtraAmmo)
-        {
-            inventory.firearms.erase(firearm);
-            break;
-        }
-        else{
-            ++firearm;
-        }
-    }
+    removeEmptyFirearmsFromInventory(inventory);
 }
 
 /*
