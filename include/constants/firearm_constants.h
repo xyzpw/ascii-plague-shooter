@@ -10,12 +10,15 @@ constexpr double BULLET_PENETRATE_KE_FACTOR_HP = 0.1;
 // Maximum number of enemies a bullet can perforate.
 constexpr int MAX_PERFORATE_COUNT = 3;
 
+// Kinetic energy of firearm projectiles.
 constexpr int BULLET_KE_9MM = 536;
 constexpr int BULLET_KE_223_REMINGTON = 1738;
 constexpr int BULLET_KE_223_REMINGTON_HP = 1300;
 constexpr int BULLET_KE_30_06 = 3894;
 constexpr int BULLET_KE_22LR = 138;
 constexpr int PELLET_KE_12GA_00_BUCKSHOT = 275;
+
+// Kinetic energy loss for firearm projectiles per meter.
 constexpr double BULLET_KE_LOSS_9MM = 1.5;
 constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.5;
 constexpr double BULLET_KE_LOSS_30_06 = 6.32;
