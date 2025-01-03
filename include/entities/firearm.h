@@ -8,7 +8,6 @@
 struct Firearm{
     FIREARM_TYPE firearmType;
     std::string name;
-    int magazineCapacity;
     bool isChambered;
     AMMO_TYPE chamberRoundType;
     bool canShoot;
