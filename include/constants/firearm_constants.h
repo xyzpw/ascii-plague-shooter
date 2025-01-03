@@ -48,4 +48,4 @@ constexpr double CARTRIDGE_9MM_HP_COST = 1.7;
 constexpr double CARTRIDGE_223_REMINGTON_COST = 2.8;
 constexpr double CARTRIDGE_223_REMINGTON_HP_COST = 2.0;
 constexpr double CARTRIDGE_30_06_COST = 3.9;
-constexpr double CARTRIDGE_BUCKSHOT_COST = 2.0;
+constexpr double CARTRIDGE_BUCKSHOT_COST = 1.5;
