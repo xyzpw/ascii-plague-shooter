@@ -102,7 +102,7 @@ void playGame(World world)
     bool hasQuit = false;
     while (!hasQuit){
         auto key = getch();
-        if (key == KEY_QUIT_GAME || key == '\b'){
+        if (key == QUIT_KEY || key == '\b'){
             hasQuit = true;
         }
         napms(25);
