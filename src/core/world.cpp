@@ -69,7 +69,7 @@ void World::dropSupplies()
 
             makeFirearmAndMagHollowPoint();
 
-            magCount = 2;
+            magCount = randIntInRange(1, 2);
             nextDropTime += magazine->capacity * (magCount + 1) *
                         CARTRIDGE_9MM_HP_COST;
             break;
