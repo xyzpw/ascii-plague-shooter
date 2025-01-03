@@ -49,8 +49,8 @@ void playGame(World world)
     while (world.active)
     {
         clearMap(world);
-        int capturedKey = getch();
 
+        int capturedKey = getch();
         respondToKeyPress(world, myPlayer, capturedKey);
 
         // Spawn infected.
