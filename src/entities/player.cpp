@@ -50,6 +50,9 @@ void Player::updateHudText()
         if (activeWeapon.chamberRoundType == AMMO_TYPE::HOLLOW_POINT){
             str += " HP";
         }
+        else if (activeWeapon.chamberRoundType == AMMO_TYPE::RIFLED_SLUG){
+            str += " SLUG";
+        }
         return str;
     };
 

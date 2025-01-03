@@ -40,5 +40,12 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
             this->pelletsPerShell = PELLET_COUNT_12GA_00_BUCKSHOT;
             this->pelletSpreadDegrees = PELLET_SPREAD_SHOTGUN;
             this->ammoType = AMMO_TYPE::PELLET_SPREAD;
+            break;
+        case CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG:
+            kineticEnergy = SLUG_KE_12GA;
+            kineticEnergyLossPerMeter = SLUG_KE_LOSS_12GA;
+            penetrateEnergyThreshold = 53;
+            ammoType = AMMO_TYPE::RIFLED_SLUG;
+            break;
     }
 }

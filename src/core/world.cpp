@@ -102,12 +102,26 @@ void World::dropSupplies()
             break;
         }
         case FIREARM_TYPE::BENELLI_M4:{
-            drop.items.ammunition[CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT] =
+            bool useSlugs = checkProbability(0.5);
+            CARTRIDGE_TYPE cartridge = useSlugs ?
+                                    CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG :
+                                    CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT;
+            drop.items.ammunition[cartridge] =
                                   firearm.magazine.capacity * randIntInRange(1,2);
 
-            nextDropTime += drop.items.ammunition.at(
-                CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT
-            ) + firearm.magazine.capacity;
+            firearm.magazine = Magazine(
+                cartridge,
+                firearm.magazine.capacity,
+                firearm.magazine.capacity - 1
+            );
+            firearm.cartridgeType = cartridge;
+
+            if (useSlugs){
+                firearm.chamberRoundType = AMMO_TYPE::RIFLED_SLUG;
+            }
+
+            nextDropTime += drop.items.ammunition.at(cartridge);
+            nextDropTime += firearm.magazine.capacity;
             nextDropTime *= CARTRIDGE_BUCKSHOT_COST;
             break;
         }

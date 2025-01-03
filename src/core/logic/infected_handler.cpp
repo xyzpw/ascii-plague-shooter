@@ -13,7 +13,7 @@
 
 void handleFirearmShot(World& world, Player& player)
 {
-    if (player.activeWeapon.magazine.ammoType == AMMO_TYPE::PELLET_SPREAD){
+    if (player.activeWeapon.chamberRoundType == AMMO_TYPE::PELLET_SPREAD){
         handleShotgunPelletShot(world, player);
         return;
     }
