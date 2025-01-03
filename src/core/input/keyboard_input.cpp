@@ -14,6 +14,7 @@ void respondToKeyPress (World& world, Player& player, int key)
 {
     switch (key){
         case QUIT_KEY:
+        case '\b':
             world.active = false;
             break;
         case FORWARD_KEY:
