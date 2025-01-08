@@ -6,6 +6,9 @@ bool checkPlayerIsDead(World& world, Player& player)
 {
     for (auto inf : world.infected){
         if (inf.alive && player.alive && inf.position == player.position){
+            if (player.gameStats.endGameMessage == ""){
+                player.gameStats.setEndGameMessage(GAME_END_MSG_INFECTED);
+            }
             return true;
         }
     }
