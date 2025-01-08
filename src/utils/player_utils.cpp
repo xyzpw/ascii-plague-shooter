@@ -5,7 +5,7 @@
 bool checkPlayerIsDead(World& world, Player& player)
 {
     for (auto inf : world.infected){
-        if (inf.alive && inf.position == player.position){
+        if (inf.alive && player.alive && inf.position == player.position){
             return true;
         }
     }
