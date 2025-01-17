@@ -60,12 +60,12 @@ void displayEndGame(World& world, Player& player)
             endGameMsg << msg << count << "\n";
     };
 
+    endGameMsg << "playtime: " << makeClockString(playtime) << "\n\n";
+
     checkAndAdd("kills: ", player.gameStats.kills);
     checkAndAdd("headshot kills: ", player.gameStats.headshots);
     checkAndAdd("grenade kills: ", player.gameStats.grenadeKills);
     checkAndAdd("claymore kills: ", player.gameStats.claymoreKills);
-
-    endGameMsg << "playtime: " << makeClockString(playtime);
 
     mvprintw(0, 0, endGameMsg.str().c_str());
     refresh();
