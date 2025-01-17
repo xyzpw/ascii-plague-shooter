@@ -68,6 +68,10 @@ void respondToKeyPress (World& world, Player& player, int key)
             plantClaymore(world, player);
             break;
         }
+        case M16_MINE_KEY:{
+            player.plantM16Mine(world);
+            break;
+        }
         case PICKUP_KEY:{
             player.pickupItem(world);
             break;

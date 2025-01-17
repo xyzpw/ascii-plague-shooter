@@ -39,5 +39,6 @@ struct Player{
     void reloadFirearm();
     void fastReloadFirearm();
     void plantClaymore(World& world);
+    void plantM16Mine(World& world);
     Player() : activeWeapon(FIREARM_TYPE::RUGER_MK_IV){};
 };

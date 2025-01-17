@@ -441,6 +441,30 @@ void Player::plantClaymore(World& world)
     hasPlantedClaymore = true;
 }
 
+void Player::plantM16Mine(World& world)
+{
+    bool hasMine = checkInventoryHasExplosiveType(
+        this->inventory, EXPLOSIVE_TYPE::M16_MINE
+    );
+
+    if (!hasMine){
+        return;
+    }
+
+    for (auto ex = inventory.explosives.begin();
+         ex != inventory.explosives.end(); ++ex)
+    {
+        if (ex->explosiveType == EXPLOSIVE_TYPE::M16_MINE){
+            ex->position = this->position;
+            ex->_explosiveId = randInt();
+            ex->isTriggerable = true;
+            world.activeExplosives.push_back(*ex);
+            this->inventory.explosives.erase(ex); // remove from inventory
+            break;
+        }
+    }
+}
+
 void Player::pickupItem(World& world)
 {
     if (isReloading){

@@ -16,4 +16,5 @@ enum GameControls{
     PICKUP_KEY = static_cast<int>('e'),
     SWITCH_WEAPON_KEY = static_cast<int>('q'),
     CLAYMORE_KEY = static_cast<int>('c'),
+    M16_MINE_KEY = static_cast<int>('m'),
 };
