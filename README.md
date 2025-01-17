@@ -63,6 +63,10 @@ Claymores can be placed with the `c` key, once a claymore is placed, it can
  be detonated with the `c` key again which will have a 1 second delay.<br>
 The claymore will shoot hundreds of fragments in the direction it is facing.
 
+##### M16 Mines
+When an infected steps on an M16 mine, it will explode and send fragments in
+all directions, killing nearby infected.
+
 #### Rescue
 When rescue arrives, you have a limited amount of time to get to the aircraft
  before they leave without you &#8212; you will lose the game.
@@ -76,6 +80,7 @@ When rescue arrives, you have a limited amount of time to get to the aircraft
 - Throw grenade: `g`
 - Throw grenade close: `G`
 - Plant claymore: `c`
+- Plant m16 mine: `m`
 - Swap firearm: `q`
 - Quit game: `backspace`
 
