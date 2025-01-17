@@ -79,3 +79,15 @@ std::unordered_map<EXPLOSIVE_TYPE, int> getInventoryExplosiveSize(
     }
     return explosives;
 }
+
+bool checkInventoryHasExplosiveType(Inventory& inventory,
+                                    const EXPLOSIVE_TYPE type)
+{
+    for (auto& it : inventory.explosives)
+    {
+        if (it.explosiveType == type){
+            return true;
+        }
+    }
+    return false;
+}
