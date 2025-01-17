@@ -358,10 +358,7 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
 
         int lossRate = getFragmentDelayedDeathLossRate(fragmentHits);
         if (lossRate > 0){
-            if (!inf.delayedDeathStartEpoch.has_value()){
-                inf.delayedDeathStartEpoch = getEpochAsDecimal();
-            }
-            inf.delayedDeathLossRate += lossRate;
+            inf._updateDelayedDeath(lossRate);
         }
 
         if (checkExplosionWasHindering(fragmentHits)){
@@ -472,10 +469,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
 
         int lossRate = getFragmentDelayedDeathLossRate(fragmentHitCount);
         if (lossRate > 0){
-            if (!inf.delayedDeathStartEpoch.has_value()){
-                inf.delayedDeathStartEpoch = getEpochAsDecimal();
-            }
-            inf.delayedDeathLossRate += lossRate;
+            inf._updateDelayedDeath(lossRate);
         }
 
         // Check if fragments hindered infected.
