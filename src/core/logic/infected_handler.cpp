@@ -448,6 +448,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         });
     world.activeExplosives.erase(exp);
 
+    // Iterate through infected.
     for (auto& inf : world.infected)
     {
         double fragmentDistance = getPositionDistance(
