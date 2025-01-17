@@ -337,6 +337,10 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
     // Check if explosion was fatal for each infected.
     for (auto& inf : world.infected)
     {
+        if (!inf.alive){
+            continue;
+        }
+
         int distance = getPositionDistance(
             inf.position, getGrenade().position
         );
