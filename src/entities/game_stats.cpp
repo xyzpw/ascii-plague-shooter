@@ -24,3 +24,8 @@ void GameStats::addClaymoreKill()
 {
     ++this->claymoreKills;
 }
+
+void GameStats::addM16MineKill()
+{
+    ++this->m16MineKills;
+}
