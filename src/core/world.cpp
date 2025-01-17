@@ -82,7 +82,7 @@ void World::dropSupplies()
             }
 
             firearm.magazine = magazine.value();
-            magCount = randIntInRange(1, 3);
+            magCount = randIntInRange(1, 2);
 
             nextDropTime = magazine->capacity * (magCount + 1);
             if (magazine->ammoType == AMMO_TYPE::HOLLOW_POINT){
