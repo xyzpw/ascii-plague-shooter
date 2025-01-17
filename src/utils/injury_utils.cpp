@@ -179,6 +179,11 @@ double getBulletExitProbability(CARTRIDGE_TYPE cartridge)
 
 int determineFragmentHitCount(int fragments, double distance)
 {
+    // Only return half of the initial fragment count if the distance is 0.
+    if (distance == 0.0){
+        return fragments / 2;
+    }
+
     double area = computeAreaFromDistance(distance);
 
     double p = 1.0 / area;
