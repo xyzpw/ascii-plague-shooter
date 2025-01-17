@@ -147,6 +147,11 @@ void World::dropSupplies()
         nextDropTime += 8;
     }
 
+    if (randIntInRange(0, 1)){
+        drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M16_MINE));
+        nextDropTime += 4;
+    }
+
     supplyDrops.push_back(drop);
 
     nextSupplyDropEpoch = getEpochAsDecimal() + nextDropTime;
