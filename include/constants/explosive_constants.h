@@ -8,9 +8,10 @@ constexpr int CLAYMORE_PASCALS = 3814639;
 constexpr int M67_FRAGMENT_COUNT = 1800;
 constexpr int CLAYMORE_FRAGMENT_COUNT = 700;
 
-constexpr int M67_FRAGMENT_KE = 125;
+constexpr int M67_FRAGMENT_KE = 147;
 constexpr int CLAYMORE_FRAGMENT_KE = 100;
-constexpr double M67_FRAGMENT_KE_LOSS = 4.58;
+
+constexpr double M67_FRAGMENT_KE_LOSS = 5.4;
 constexpr double CLAYMORE_FRAGMENT_KE_LOSS = 3.4;
 
 constexpr double M67_PENETRATE_ENERGY_THRESHOLD = 1.4;
