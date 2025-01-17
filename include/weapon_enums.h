@@ -34,5 +34,6 @@ enum class RELOAD_TYPE{
 enum class EXPLOSIVE_TYPE{
     M67_GRENADE,
     M18A1_CLAYMORE,
+    M16_MINE,
     __COUNT,
 };

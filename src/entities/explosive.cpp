@@ -33,5 +33,17 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
             fragmentPenetrateEnergyThreshold =
                     CLAYMORE_PENETRATE_ENERGY_THRESHOLD;
             break;
+        case EXPLOSIVE_TYPE::M16_MINE:
+            explosionPascals = M16_MINE_PASCALS;
+            explosionDelay = M16_MINE_EXPLOSION_DELAY;
+            explodeAudioFile = "explosion.wav";
+            explodeCloseAudioFile = "explosion_close.wav";
+            explosiveChar = M16_MINE_CHAR;
+            fragmentCount = M16_MINE_FRAGMENT_COUNT;
+            fragmentKineticEnergy = M16_MINE_FRAGMENT_KE;
+            fragmentKineticEnergyLossPerMeter = M16_MINE_FRAGMENT_KE_LOSS;
+            fragmentPenetrateEnergyThreshold =
+                    M16_MINE_PENETRATE_ENERGY_THRESHOLD;
+            break;
     }
 }

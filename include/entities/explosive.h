@@ -22,5 +22,6 @@ struct Explosive{
     double fragmentPenetrateEnergyThreshold;
     std::optional<int> _explosiveId;
     std::optional<DIRECTION> facingDirection;
+    std::optional<bool> isTriggerable;
     Explosive(EXPLOSIVE_TYPE type);
 };
