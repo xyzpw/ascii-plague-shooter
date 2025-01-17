@@ -115,21 +115,34 @@ void Player::updateHudText()
         hudText += " / " + makeMagString();
     }
 
-    auto explosiveInvSize = getInventoryExplosiveSize(inventory);
-    int m67Count =
-            explosiveInvSize.count(EXPLOSIVE_TYPE::M67_GRENADE) ?
-            explosiveInvSize.at(EXPLOSIVE_TYPE::M67_GRENADE) : 0;
+    auto invExplosive = getInventoryExplosiveSize(this->inventory);
+    for (auto it = invExplosive.begin(); it != invExplosive.end(); ++it)
+    {
+        std::string label;
+        switch (it->first){
+            case EXPLOSIVE_TYPE::M67_GRENADE:
+                label = "m67 grenades: ";
+                break;
+            case EXPLOSIVE_TYPE::M18A1_CLAYMORE:
+                label = "claymores: ";
+                break;
+            case EXPLOSIVE_TYPE::M16_MINE:
+                label = "m16 mines: ";
+                break;
+        }
 
-    int claymoreCount = explosiveInvSize.count(EXPLOSIVE_TYPE::M18A1_CLAYMORE) ?
-            explosiveInvSize.at(EXPLOSIVE_TYPE::M18A1_CLAYMORE) : 0;
+        // Add newline to hud text if explosive info has not been added yet.
+        if (it == invExplosive.begin()){
+            this->hudText += "\n";
+        }
 
-    if (m67Count){
-        hudText += "\nm67 grenades: " + std::to_string(m67Count);
+        this->hudText += label + std::to_string(it->second);
+
+        if (std::next(it) != invExplosive.end()){
+            this->hudText += ", ";
+        }
     }
-    if (claymoreCount){
-        hudText += m67Count > 0 ? ", " : "\n";
-        hudText += "claymores: " + std::to_string(claymoreCount);
-    }
+
     hudText += "\nkills: " + std::to_string(gameStats.kills);
 }
 
