@@ -60,7 +60,9 @@ void displayEndGame(World& world, Player& player)
             endGameMsg << msg << count << "\n";
     };
 
-    endGameMsg << "playtime: " << makeClockString(playtime) << "\n\n";
+    std::string playtimeLabel = player.alive ?
+                                "Playtime: " : "Survival time: ";
+    endGameMsg << playtimeLabel << makeClockString(playtime) << "\n\n";
 
     checkAndAdd("kills: ", player.gameStats.kills);
     checkAndAdd("headshot kills: ", player.gameStats.headshots);
