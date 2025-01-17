@@ -64,7 +64,7 @@ void playGame(World world)
         }
 
         if (checkPlayerIsDead(world, myPlayer)){
-            world.active = false;
+            myPlayer.alive = false;
         }
 
         handleDelayedDeathInfected(world, myPlayer);
