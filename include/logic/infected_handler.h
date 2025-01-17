@@ -8,4 +8,5 @@ void handleFirearmShot(World& world, Player& player);
 void handleShotgunPelletShot(World&, Player&);
 void handleGrenadeExplosion(World& world, Player& player, int explosiveId);
 void handleClaymoreExplosion(World& world, Player& player, Explosive explosive);
+void handleM16MineExplosion(World&, Player&, Explosive);
 void handleDelayedDeathInfected(World&, Player&);

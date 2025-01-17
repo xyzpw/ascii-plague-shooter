@@ -490,6 +490,94 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     }
 }
 
+void handleM16MineExplosion(World& world, Player& player, Explosive mine)
+{
+    const int FRAGMENT_KE = mine.fragmentKineticEnergy;
+    const double FRAGMENT_KE_LOSS = mine.fragmentKineticEnergyLossPerMeter;
+    const double PENETRATE_THRESHOLD = mine.fragmentPenetrateEnergyThreshold;
+    int activeFragmentCount = mine.fragmentCount;
+
+    // Delay between mine trigger and explosion.
+    usleep(mine.explosionDelay * 1e+6);
+
+    double playerToMineDistance = getPositionDistance(
+        mine.position, player.position
+    );
+
+    bool isExplosionClose = checkExplosionRupturedEar(
+        mine, playerToMineDistance
+    );
+
+    // Check if explosion has killed player if they are in range.
+    if (computeAreaFromDistance(playerToMineDistance) <= mine.fragmentCount)
+    {
+        int hits = determineFragmentHitCount(
+            activeFragmentCount, playerToMineDistance
+        );
+        activeFragmentCount -= hits;
+        if (checkExplosionWasFatal(mine, hits, playerToMineDistance)){
+            player.alive = false;
+            player.gameStats.setEndGameMessage(GAME_END_MSG_M16_MINE);
+            return;
+        }
+    }
+
+    // Play explosion sound.
+    std::string explosionFileName = isExplosionClose ?
+                mine.explodeCloseAudioFile : mine.explodeAudioFile;
+    std::thread(playAudio, explosionFileName).detach();
+
+    // Iterate through each infected.
+    for (auto& inf : world.infected)
+    {
+        if (!inf.alive){
+            continue;
+        }
+
+        double infDistance = getPositionDistance(mine.position, inf.position);
+
+        // Skip if fragment energy is less than penetrate threshold.
+        int activeFragmentKe = FRAGMENT_KE - FRAGMENT_KE_LOSS * infDistance;
+        if (activeFragmentKe < PENETRATE_THRESHOLD){
+            continue;
+        }
+
+        int fragmentHitCount = determineFragmentHitCount(
+            activeFragmentCount, infDistance
+        );
+        activeFragmentCount -= fragmentHitCount;
+
+        bool explosionWasFatal = checkExplosionWasFatal(
+            mine, fragmentHitCount, infDistance
+        );
+
+        if (explosionWasFatal){
+            inf.markAsDead();
+            player.gameStats.addKill();
+            player.gameStats.addM16MineKill();
+            continue;
+        }
+
+        int lossRate = getFragmentDelayedDeathLossRate(fragmentHitCount);
+        if (lossRate > 0){
+            inf._updateDelayedDeath(lossRate);
+        }
+
+        if (checkExplosionWasHindering(fragmentHitCount)){
+            inf.makeHindered();
+        }
+    }
+
+    // Remove mine from world.
+    auto itMine = std::find_if(
+        world.activeExplosives.begin(), world.activeExplosives.end(),
+        [&](Explosive& ex){
+            return ex._explosiveId == mine._explosiveId;
+        }
+    );
+    world.activeExplosives.erase(itMine);
+}
+
 void handleDelayedDeathInfected(World& world, Player& player)
 {
     for (auto &inf : world.infected){
