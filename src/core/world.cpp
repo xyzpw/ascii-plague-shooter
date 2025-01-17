@@ -141,7 +141,9 @@ void World::dropSupplies()
     }
 
     if (randIntInRange(0, 1)){
-        drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE));
+        drop.items.explosives.push_back(
+            Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE)
+        );
         nextDropTime += 8;
     }
 
