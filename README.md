@@ -57,7 +57,7 @@ An M67 grenade can be thrown with the `g` key. The distance of the thrown
  randomized.<br>
 The M67 grenade will have about a thousand fragments going in all
  directions.<br>
-The time to detonate is randomized from 4 to 5.5 seconds.
+The time to detonate is randomized from 4 to 5 seconds.
 ##### Claymores
 Claymores can be placed with the `c` key, once a claymore is placed, it can
  be detonated with the `c` key again which will have a 1 second delay.<br>
