@@ -16,6 +16,7 @@ constexpr const char* PLAYER_WEAPON_CHAR_HORIZONTAL = "\u2015";
 
 constexpr const char* GAME_END_MSG_GRENADE = "cause of death: grenade";
 constexpr const char* GAME_END_MSG_CLAYMORE = "cause of death: claymore";
+constexpr const char* GAME_END_MSG_M16_MINE = "cause of death: m16 mine";
 constexpr const char* GAME_END_MSG_RESCUED = "You have been rescued!";
 constexpr const char* GAME_END_MSG_RESCUE_FAILED = "You have been left behind!";
 constexpr const char* GAME_END_MSG_INFECTED =
