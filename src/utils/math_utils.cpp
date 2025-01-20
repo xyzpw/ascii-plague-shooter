@@ -1,4 +1,5 @@
 #include <cmath>
+#include <vector>
 #include "math_utils.h"
 #include "position.h"
 #include "constants/physics_constants.h"
@@ -71,4 +72,48 @@ double getPositionDistance(Position p1, Position p2)
 double calculateExpDecay(double value, double decay, double events)
 {
     return value * std::pow(1 - decay, events);
+}
+
+double getBlastWaveRadius(double energy, double time)
+{
+    return std::pow(energy * time * time / AIR_DENSITY, 1.0/5.0);
+}
+
+std::vector<Position> getMidpointCirclePositions(Position pos, int radius)
+{
+    std::vector<Position> points;
+
+    int col = pos.column;
+    int row = pos.row;
+
+    int x = 0;
+    int y = radius;
+    int d = 1 - radius;
+
+    auto addPoints = [&](int x, int y){
+        points.push_back(Position{.column=col+x, .row=row+y});
+        points.push_back(Position{.column=col-x, .row=row+y});
+        points.push_back(Position{.column=col+x, .row=row-y});
+        points.push_back(Position{.column=col-x, .row=row-y});
+        points.push_back(Position{.column=col+y, .row=row+x});
+        points.push_back(Position{.column=col-y, .row=row+x});
+        points.push_back(Position{.column=col+y, .row=row-x});
+        points.push_back(Position{.column=col-y, .row=row-x});
+    };
+
+    addPoints(x, y);
+    while (x < y)
+    {
+        if (d < 0){
+            d += 2 * x + 3;
+        }
+        else {
+            d += 2 * (x - y) + 5;
+            --y;
+        }
+        ++x;
+        addPoints(x, y);
+    }
+
+    return points;
 }
