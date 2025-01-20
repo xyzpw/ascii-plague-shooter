@@ -11,4 +11,7 @@ void GameSettings::setSettingsFromArgs(
     if (args.count("quick")){
         this->quickGame = true;
     }
+    if (args.count("no-animation")){
+        this->animations = false;
+    }
 }

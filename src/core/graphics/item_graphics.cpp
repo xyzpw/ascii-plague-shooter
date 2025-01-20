@@ -16,6 +16,11 @@ void drawWorldItems(World& world)
             explosive.explosiveChar
         );
     }
+
+    // We are done with this function if the user disables animations.
+    if (!world.settings.animations){
+        return;
+    }
     // Display characters at positions for explosion animations to display.
     for (auto it : world.animationPositions){
         mvprintw(it.row, it.column, ".");
