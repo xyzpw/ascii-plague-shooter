@@ -8,6 +8,7 @@ void drawWorldItems(World& world)
         mvprintw(drop.position.row, drop.position.column, drop.itemChar);
     }
 
+    // Display explosives.
     for (auto explosive : world.activeExplosives){
         mvprintw(
             explosive.position.row,
