@@ -93,9 +93,9 @@ $ make
 $ ./plague-shooter
 ```
 
-To allow colors:
+To play without colors:
 ```bash
-$ ./plague-shooter --colors
+$ ./plague-shooter --no-color
 ```
 
 To reduce rescue arrival time:
