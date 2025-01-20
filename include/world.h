@@ -22,6 +22,7 @@ struct World{
     double nextSupplyDropEpoch;
     Rescue rescue;
     GameSettings settings;
+    std::vector<Position> animationPositions;
     void dropSupplies();
     World();
 };
