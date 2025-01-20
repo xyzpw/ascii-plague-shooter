@@ -102,3 +102,8 @@ To reduce rescue arrival time:
 ```bash
 $ ./plague-shooter --quick
 ```
+
+To play without animations:
+```bash
+$ ./plague-shooter --no-animation
+```
