@@ -10,6 +10,7 @@
 #include "physics/bullet_physics.h"
 #include "logic/splatter_effect_logic.h"
 #include "audio_handler.h"
+#include "animations/explosion_animation.h"
 
 void handleFirearmShot(World& world, Player& player)
 {
@@ -310,6 +311,11 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
     bool playerInLethalRange = computeAreaFromDistance(playerDistance) <=
                                fragmentCount;
 
+
+    // Play explosion animation.
+    Position grenadePosition = getGrenade().position;
+    playExplosionAnimationThread(world, grenadePosition, explosionEnergy);
+
     // Check if grenade was fatal to player if they are within fragmentation
     // range.
     if (playerInLethalRange)
@@ -509,6 +515,10 @@ void handleM16MineExplosion(World& world, Player& player, Explosive mine)
     bool isExplosionClose = checkExplosionRupturedEar(
         mine, playerToMineDistance
     );
+
+    // Play explosion animation.
+    Position minePosition = mine.position;
+    playExplosionAnimationThread(world, minePosition, EXPLOSION_ENERGY);
 
     // Check if explosion has killed player if they are in range.
     if (computeAreaFromDistance(playerToMineDistance) <= mine.fragmentCount)

@@ -16,6 +16,10 @@ void drawWorldItems(World& world)
             explosive.explosiveChar
         );
     }
+    // Display characters at positions for explosion animations to display.
+    for (auto it : world.animationPositions){
+        mvprintw(it.row, it.column, ".");
+    }
 }
 
 void drawRescue(World& world)
