@@ -135,11 +135,13 @@ void World::dropSupplies()
         }
     }
 
+    // Add grenade.
     for (int i = 0; i < randIntInRange(2, 4); ++i){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M67_GRENADE));
         nextDropTime += 4;
     }
 
+    // Add claymore.
     if (randIntInRange(0, 1)){
         drop.items.explosives.push_back(
             Explosive(EXPLOSIVE_TYPE::M18A1_CLAYMORE)
@@ -147,6 +149,7 @@ void World::dropSupplies()
         nextDropTime += 8;
     }
 
+    // Add M16 mine.
     if (randIntInRange(0, 1)){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M16_MINE));
         nextDropTime += 4;
