@@ -41,6 +41,12 @@ void processGrenadeThrow(World& world, Explosive grenade,
     for (auto pos : pathPositions)
     {
         int index = getGrenadeIndex();
+
+        // Exit loop if grenade index is out of range.
+        if (index == world.activeExplosives.size()){
+            break;
+        }
+
         world.activeExplosives.at(index).position = pos;
         double velocity = getThrownObjectVelocityAtTime(
             throwVelocity, throwAngleDegrees, airtime
@@ -49,5 +55,9 @@ void processGrenadeThrow(World& world, Explosive grenade,
         usleep(sleepTime * 1e6);
         airtime += sleepTime;
     }
-    world.activeExplosives.at(getGrenadeIndex()).position = maxPosition.value();
+
+    // Set grenade's position to max position.
+    if (getGrenadeIndex() != world.activeExplosives.size()){
+        world.activeExplosives.at(getGrenadeIndex()).position = maxPosition.value();
+    }
 }
