@@ -136,7 +136,8 @@ void World::dropSupplies()
     }
 
     // Add grenade.
-    for (int i = 0; i < randIntInRange(2, 4); ++i){
+    int supplyDropGrenadeCount = randIntInRange(2, 4);
+    for (int i = 0; i < supplyDropGrenadeCount; ++i){
         drop.items.explosives.push_back(Explosive(EXPLOSIVE_TYPE::M67_GRENADE));
         nextDropTime += 4;
     }
