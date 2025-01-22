@@ -348,7 +348,7 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
             continue;
         }
 
-        int distance = getPositionDistance(
+        double distance = getPositionDistance(
             inf.position, getGrenade().position
         );
 
