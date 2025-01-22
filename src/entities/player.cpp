@@ -115,6 +115,7 @@ void Player::updateHudText()
         hudText += " / " + makeMagString();
     }
 
+    // Add explosive count to hud.
     auto invExplosive = getInventoryExplosiveSize(this->inventory);
     for (auto it = invExplosive.begin(); it != invExplosive.end(); ++it)
     {
