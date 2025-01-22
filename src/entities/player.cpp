@@ -121,13 +121,13 @@ void Player::updateHudText()
         std::string label;
         switch (it->first){
             case EXPLOSIVE_TYPE::M67_GRENADE:
-                label = "m67 grenades: ";
+                label = "M67 grenades: ";
                 break;
             case EXPLOSIVE_TYPE::M18A1_CLAYMORE:
                 label = "claymores: ";
                 break;
             case EXPLOSIVE_TYPE::M16_MINE:
-                label = "m16 mines: ";
+                label = "M16 mines: ";
                 break;
         }
 
