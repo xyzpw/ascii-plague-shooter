@@ -15,7 +15,7 @@ void handleRescueGameLoop(World& world, Player& player)
     else if (rescue->hasArrived && rescue->canBoard && !rescue->isRescueFinished){
         drawRescue(world);
 
-        if (getPositionDistance(player.position, rescue->position) <= 2){
+        if (getPositionDistance(player.position, rescue->position) <= 1){
             player.isRescued = true;
             player.gameStats.setEndGameMessage(GAME_END_MSG_RESCUED);
             world.active = false;
