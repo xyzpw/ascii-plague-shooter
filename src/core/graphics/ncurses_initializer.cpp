@@ -12,6 +12,7 @@ void initializeScreen()
     nodelay(stdscr, 1);
     start_color();
     init_pair(COLOR_PAIR_SPLATTER, COLOR_ID_SPLATTER, -1);
+    init_pair(COLOR_PAIR_GREEN_FG, COLOR_GREEN, -1);
 }
 
 void cleanupScreen()
