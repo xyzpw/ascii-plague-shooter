@@ -115,7 +115,7 @@ int getFragmentDelayedDeathLossRate(int fragmentHits)
     int lossRate = 0;
     for (int i = 0; i < fragmentHits; ++i){
         HIT_LOCATION location = randHitLocation();
-        if (checkProbability(DELAYED_DEATH_PROBABILITY_FRAGMENT)){
+        if (checkShouldDelayedDeath(location, false)){
             lossRate += calculateDelayedDeathLossRate(location, false);
         }
     }
