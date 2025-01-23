@@ -6,9 +6,12 @@ constexpr int M67_PASCALS = 1025422;
 constexpr int CLAYMORE_PASCALS = 3814639;
 constexpr int M16_MINE_PASCALS = 1'897'830;
 
+constexpr int M67_FRAGMENT_COUNT_MIN = 774;
+constexpr int M67_FRAGMENT_COUNT_MAX = 3483;
 constexpr int CLAYMORE_FRAGMENT_COUNT = 700;
 constexpr int M16_MINE_FRAGMENT_COUNT = 923;
 
+constexpr int M67_FRAGMENT_KE_SCALE_NUMERATOR = 391'894;
 constexpr int CLAYMORE_FRAGMENT_KE = 100;
 constexpr int M16_MINE_FRAGMENT_KE = 133;
 
