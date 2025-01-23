@@ -6,6 +6,7 @@
 #include "entities/rescue.h"
 #include "string_utils.h"
 #include "time_utils.h"
+#include "constants/ncurses_constants.h"
 
 void drawGameStatus(World& world, Player& player)
 {
@@ -40,6 +41,14 @@ void drawRescueCountdown(World& world)
     move(labelPos.second, labelPos.first);
     clrtoeol();
     mvprintw(labelPos.second, labelPos.first, txt.c_str());
+
+    // Color escape countdown green if colors are enabled.
+    if (hasArrived && world.settings.colors){
+        mvchgat(
+            labelPos.second, labelPos.first, txt.length(),
+            A_NORMAL, COLOR_PAIR_GREEN_FG, nullptr
+        );
+    }
 }
 
 void displayEndGame(World& world, Player& player)
