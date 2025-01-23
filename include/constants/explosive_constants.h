@@ -15,11 +15,11 @@ constexpr int M67_FRAGMENT_KE_SCALE_NUMERATOR = 391'894;
 constexpr int CLAYMORE_FRAGMENT_KE = 100;
 constexpr int M16_MINE_FRAGMENT_KE = 133;
 
-constexpr double M67_FRAGMENT_KE_LOSS = 3.7;
+constexpr double M67_FRAGMENT_KE_LOSS = 2.0;
 constexpr double CLAYMORE_FRAGMENT_KE_LOSS = 3.4;
 constexpr double M16_MINE_FRAGMENT_KE_LOSS = 3.1;
 
-constexpr double M67_PENETRATE_ENERGY_THRESHOLD = 1.3;
+constexpr double M67_PENETRATE_ENERGY_THRESHOLD = 2.5;
 constexpr double CLAYMORE_PENETRATE_ENERGY_THRESHOLD = 1.6;
 constexpr double M16_MINE_PENETRATE_ENERGY_THRESHOLD = 6.9;
 
