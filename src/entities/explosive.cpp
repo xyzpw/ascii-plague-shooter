@@ -16,8 +16,11 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
             explodeAudioFile = "explosion_with_debris.wav";
             explodeCloseAudioFile = "explosion_close.wav";
             explosiveChar = GRENADE_CHAR;
-            fragmentCount = M67_FRAGMENT_COUNT;
-            fragmentKineticEnergy = M67_FRAGMENT_KE;
+            fragmentCount = randIntInRange(
+                M67_FRAGMENT_COUNT_MIN, M67_FRAGMENT_COUNT_MAX
+            );
+            fragmentKineticEnergy = M67_FRAGMENT_KE_SCALE_NUMERATOR /
+                                    fragmentCount;
             fragmentKineticEnergyLossPerMeter = M67_FRAGMENT_KE_LOSS;
             fragmentPenetrateEnergyThreshold = M67_PENETRATE_ENERGY_THRESHOLD;
             break;
