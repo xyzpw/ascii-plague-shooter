@@ -160,3 +160,8 @@ void World::dropSupplies()
 
     nextSupplyDropEpoch = getEpochAsDecimal() + nextDropTime;
 }
+
+bool World::checkShouldDropSupplies()
+{
+    return this->nextSupplyDropEpoch <= getEpochAsDecimal();
+}

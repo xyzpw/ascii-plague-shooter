@@ -24,5 +24,6 @@ struct World{
     GameSettings settings;
     std::vector<Position> animationPositions;
     void dropSupplies();
+    bool checkShouldDropSupplies();
     World();
 };
