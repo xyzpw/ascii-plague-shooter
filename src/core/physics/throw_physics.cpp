@@ -13,6 +13,13 @@ std::vector<Position> getThrowPathPositions(
     int incrementValue = direction == EAST || direction == SOUTH ? +1 : -1;
     bool isVertical = direction == NORTH || direction == SOUTH;
 
+    // Return empty result if the start and end position is the same.
+    if ((isVertical && startPos.row == endPos.row) ||
+        (!isVertical && startPos.column == endPos.column))
+    {
+        return pathPositions;
+    }
+
     if (isVertical){
         for (int i = startPos.row + incrementValue; i != endPos.row;
              i += incrementValue)
