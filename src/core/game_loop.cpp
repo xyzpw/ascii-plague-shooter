@@ -59,7 +59,7 @@ void playGame(World world)
         }
 
         // Drop supplies at intervals.
-        if (world.nextSupplyDropEpoch <= getEpochAsDecimal()){
+        if (world.checkShouldDropSupplies()){
             world.dropSupplies();
         }
 
