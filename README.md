@@ -80,7 +80,7 @@ When rescue arrives, you have a limited amount of time to get to the aircraft
 - Throw grenade: `g`
 - Throw grenade close: `G`
 - Plant claymore: `c`
-- Plant m16 mine: `m`
+- Plant mine: `m`
 - Swap firearm: `q`
 - Quit game: `backspace`
 
