@@ -31,6 +31,7 @@ Different firearms use different cartridge types, each have a different
 Enemies shot may also have a delayed death &#8212; it may take a several
  seconds or even longer depending on the hit location and severity.<br>
 Enemies may even be hindered when shot or hit by explosive fragments.
+
 #### Fast Reloading
 If there are multiple enemies and you can't reload, you can fast reload &#8212;
  you will lose the entire mag at the cost of reloading faster.
@@ -42,6 +43,7 @@ If the firearm does not use detachable magazines, fast reloading loads a single
 ##### Accuracy
 The further an enemy is being shot at is, the less chance of the shot being
  a successful hit.
+
 ##### Bullet Types
 Some bullets can be a hollow point, which will increase the probability of
  a shot being fatal at the cost of penetrating less enemies.
@@ -51,6 +53,7 @@ Explosives can be used to take out multiple enemies if you are low on ammo
  or reloading.
 > [!TIP]
 > Your own explosives can kill you, stay far away!
+
 ##### M67 Grenade
 An M67 grenade can be thrown with the `g` key. The distance of the thrown
  grenade is random, this is due to the throw angle and throw velocity being
@@ -58,6 +61,7 @@ An M67 grenade can be thrown with the `g` key. The distance of the thrown
 The M67 grenade will have about a thousand fragments going in all
  directions.<br>
 The time to detonate is randomized from 4 to 5 seconds.
+
 ##### Claymores
 Claymores can be placed with the `c` key, once a claymore is placed, it can
  be detonated with the `c` key again which will have a 1 second delay.<br>
