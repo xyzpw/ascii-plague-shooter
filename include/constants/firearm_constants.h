@@ -38,6 +38,7 @@ inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_DECAYS = 
     {FIREARM_TYPE::REMINGTON_700, 0.0135},
     {FIREARM_TYPE::RUGER_MK_IV, 0.054},
     {FIREARM_TYPE::BENELLI_M4, 0.0263},
+    {FIREARM_TYPE::DB_SHOTGUN, 0.0188},
 };
 inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_MULTIPLIERS = {
     {FIREARM_TYPE::SIG_M17, 1.74},
@@ -45,6 +46,7 @@ inline const std::unordered_map<FIREARM_TYPE, double> FIREARM_ACCURACY_MULTIPLIE
     {FIREARM_TYPE::REMINGTON_700, 1.7},
     {FIREARM_TYPE::RUGER_MK_IV, 1.74},
     {FIREARM_TYPE::BENELLI_M4, 1.7},
+    {FIREARM_TYPE::DB_SHOTGUN, 1.5},
 };
 
 // Cost of each cartridge -- supply drop delay in seconds.

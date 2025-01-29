@@ -6,6 +6,7 @@ enum class FIREARM_TYPE{
     REMINGTON_700,
     RUGER_MK_IV,
     BENELLI_M4,
+    DB_SHOTGUN,
     __COUNT,
 };
 
