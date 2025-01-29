@@ -10,6 +10,7 @@ The objective is to survive against rage-infected zombie-like enemies
  until rescue arrives.<br>
 
 ### Features
+- Animations: Animations such as explosions.
 - Real formulas: Real physics formulas and randomized values for realism.
 - Multiple firearms: Variety of &#8212; real &#8212; different firearms.
 - Realistic reloading: Same magazines are used after reloading. Firearms
@@ -77,6 +78,7 @@ When rescue arrives, you have a limited amount of time to get to the aircraft
 
 ### Controls
 - Movement: `wasd`
+- Look: `WASD`
 - Shoot: `space`
 - Reload: `r`
 - Fast reload: `R`
