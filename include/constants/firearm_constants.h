@@ -17,17 +17,17 @@ constexpr int BULLET_KE_223_REMINGTON_HP = 1300;
 constexpr int BULLET_KE_30_06 = 3894;
 constexpr int BULLET_KE_22LR = 138;
 constexpr int SLUG_KE_12GA = 3371;
-constexpr int PELLET_KE_12GA_00_BUCKSHOT = 275;
+constexpr int PELLET_KE_12GA_BUCKSHOT = 275;
 
 // Kinetic energy loss for firearm projectiles per meter.
 constexpr double BULLET_KE_LOSS_9MM = 1.5;
 constexpr double BULLET_KE_LOSS_223_REMINGTON = 4.5;
 constexpr double BULLET_KE_LOSS_30_06 = 6.32;
 constexpr double BULLET_KE_LOSS_22LR = 0.49;
-constexpr double PELLET_KE_LOSS_12GA_00_BUCKSHOT = 2.5;
+constexpr double PELLET_KE_LOSS_12GA_BUCKSHOT = 2.5;
 constexpr double SLUG_KE_LOSS_12GA = 11.4;
 
-constexpr int PELLET_COUNT_12GA_00_BUCKSHOT = 9;
+constexpr int PELLET_COUNT_12GA_BUCKSHOT = 9;
 
 // Spread of shotgun pellets --in degrees-- when fired.
 constexpr double PELLET_SPREAD_SHOTGUN = 2.55;

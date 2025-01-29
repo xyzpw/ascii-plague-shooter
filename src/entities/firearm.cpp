@@ -111,7 +111,7 @@ Firearm::Firearm(FIREARM_TYPE type)
             accuracyDecay = FIREARM_ACCURACY_DECAYS.at(type);
             accuracyScaleFactor = FIREARM_ACCURACY_MULTIPLIERS.at(type);
 
-            cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT;
+            cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
             chamberRoundType = AMMO_TYPE::PELLET_SPREAD;
 
             loadedRounds = 7;

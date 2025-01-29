@@ -33,11 +33,11 @@ Magazine::Magazine(CARTRIDGE_TYPE cartridge, int maxRounds, int rounds)
             this->kineticEnergyLossPerMeter = BULLET_KE_LOSS_22LR;
             this->penetrateEnergyThreshold = 6;
             break;
-        case CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT:
-            this->kineticEnergy = PELLET_KE_12GA_00_BUCKSHOT;
-            this->kineticEnergyLossPerMeter = PELLET_KE_LOSS_12GA_00_BUCKSHOT;
+        case CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT:
+            this->kineticEnergy = PELLET_KE_12GA_BUCKSHOT;
+            this->kineticEnergyLossPerMeter = PELLET_KE_LOSS_12GA_BUCKSHOT;
             this->penetrateEnergyThreshold = 4;
-            this->pelletsPerShell = PELLET_COUNT_12GA_00_BUCKSHOT;
+            this->pelletsPerShell = PELLET_COUNT_12GA_BUCKSHOT;
             this->pelletSpreadDegrees = PELLET_SPREAD_SHOTGUN;
             this->ammoType = AMMO_TYPE::PELLET_SPREAD;
             break;

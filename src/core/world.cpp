@@ -105,7 +105,7 @@ void World::dropSupplies()
             bool useSlugs = checkProbability(0.5);
             CARTRIDGE_TYPE cartridge = useSlugs ?
                                     CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG :
-                                    CARTRIDGE_TYPE::CARTRIDGE_12GA_00_BUCKSHOT;
+                                    CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
             drop.items.ammunition[cartridge] =
                                   firearm.magazine.capacity * randIntInRange(1,2);
 
