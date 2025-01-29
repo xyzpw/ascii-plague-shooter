@@ -119,5 +119,28 @@ Firearm::Firearm(FIREARM_TYPE type)
             feedSystem = RELOAD_TYPE::DIRECT_LOAD;
             break;
         }
+        case FIREARM_TYPE::DB_SHOTGUN:{
+            reloadTime = 3.0;
+            fastReloadTime = 3.0;
+
+            loadRoundTime = 0.33;
+            chamberReloadDelay = 0.25;
+
+            name = "Double-barreled Shotgun";
+            shootAudioFile = "12ga_shoot.wav";
+
+            shootIntervalMs = 250;
+
+            accuracyDecay = FIREARM_ACCURACY_DECAYS.at(type);
+            accuracyScaleFactor = FIREARM_ACCURACY_MULTIPLIERS.at(type);
+
+            cartridgeType = CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
+            chamberRoundType = AMMO_TYPE::PELLET_SPREAD;
+
+            loadedRounds = 2;
+            magazine = Magazine(cartridgeType, 2, 2);
+            feedSystem = RELOAD_TYPE::DIRECT_LOAD;
+            break;
+        }
     }
 }
