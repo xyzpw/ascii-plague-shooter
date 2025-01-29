@@ -60,12 +60,13 @@ void Player::updateHudText()
     auto makeMagString = [&](){
         std::string str = "";
         if (this->activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD){
-            str = std::string(
-                getInventoryAmmunitionCount(
-                    inventory,
-                    activeWeapon.cartridgeType
-                ), '|'
+            int roundCount = getInventoryAmmunitionCount(
+                inventory, this->activeWeapon.cartridgeType
             );
+            if (checkIsShotgun(this->activeWeapon.firearmType)){
+                roundCount = getShotgunAmmunitionCount(this->inventory);
+            }
+            str = std::string(roundCount, '|');
             return str;
         }
         for (auto mag : inventory.magazines)
@@ -94,6 +95,9 @@ void Player::updateHudText()
     bool displayMags = checkHasMag(inventory, activeWeapon.cartridgeType);
     if (activeWeapon.feedSystem == RELOAD_TYPE::DIRECT_LOAD){
         displayMags = checkHasAmmunition(inventory, activeWeapon.cartridgeType);
+        if (checkIsShotgun(this->activeWeapon.firearmType)){
+            displayMags = getShotgunAmmunitionCount(this->inventory) > 0;
+        }
     }
 
     bool displayNoAmmo = !displayMags && activeWeapon.loadedRounds < 1;
