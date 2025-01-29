@@ -91,3 +91,36 @@ bool checkInventoryHasExplosiveType(Inventory& inventory,
     }
     return false;
 }
+
+bool checkHasAltShotgunAmmo(Inventory& inventory, AMMO_TYPE currentAmmoType)
+{
+    AMMO_TYPE buckshot = AMMO_TYPE::PELLET_SPREAD;
+    AMMO_TYPE slug = AMMO_TYPE::RIFLED_SLUG;
+
+    int count = 0;
+    if (currentAmmoType == buckshot){
+        count = getInventoryAmmunitionCount(
+            inventory, CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG
+        );
+    }
+    else if (currentAmmoType == slug){
+        count = getInventoryAmmunitionCount(
+            inventory, CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT
+        );
+    }
+
+    return count > 0;
+}
+
+int getShotgunAmmunitionCount(Inventory& inventory)
+{
+    int count = 0;
+    count += getInventoryAmmunitionCount(
+        inventory, CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT
+    );
+    count += getInventoryAmmunitionCount(
+        inventory, CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG
+    );
+
+    return count;
+}

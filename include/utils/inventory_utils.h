@@ -11,3 +11,5 @@ bool checkInventoryHasFirearm(Inventory, FIREARM_TYPE);
 void removeEmptyFirearmsFromInventory(Inventory&);
 std::unordered_map<EXPLOSIVE_TYPE, int> getInventoryExplosiveSize(Inventory);
 bool checkInventoryHasExplosiveType(Inventory&, const EXPLOSIVE_TYPE);
+bool checkHasAltShotgunAmmo(Inventory&, AMMO_TYPE currentAmmoType);
+int getShotgunAmmunitionCount(Inventory&);
