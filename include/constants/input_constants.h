@@ -5,9 +5,13 @@
 enum GameControls{
     QUIT_KEY = KEY_BACKSPACE,
     FORWARD_KEY = static_cast<int>('w'),
+    LOOK_FORWARD_KEY = static_cast<int>('W'),
     BACKWARD_KEY = static_cast<int>('s'),
+    LOOK_BACKWARD_KEY = static_cast<int>('S'),
     LEFT_KEY = static_cast<int>('a'),
+    LOOK_LEFT_KEY = static_cast<int>('A'),
     RIGHT_KEY = static_cast<int>('d'),
+    LOOK_RIGHT_KEY = static_cast<int>('D'),
     SHOOT_KEY = static_cast<int>(' '),
     RELOAD_KEY = static_cast<int>('r'),
     FAST_RELOAD_KEY = static_cast<int>('R'),
