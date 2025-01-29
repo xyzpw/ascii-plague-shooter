@@ -21,17 +21,33 @@ void respondToKeyPress (World& world, Player& player, int key)
         case KEY_UP:
             movePlayer(world, player, NORTH);
             break;
+        case LOOK_FORWARD_KEY:
+            player.facingDirection = NORTH;
+            player.fixWeaponAppearance();
+            break;
         case BACKWARD_KEY:
         case KEY_DOWN:
             movePlayer(world, player, SOUTH);
+            break;
+        case LOOK_BACKWARD_KEY:
+            player.facingDirection = SOUTH;
+            player.fixWeaponAppearance();
             break;
         case LEFT_KEY:
         case KEY_LEFT:
             movePlayer(world, player, WEST);
             break;
+        case LOOK_LEFT_KEY:
+            player.facingDirection = WEST;
+            player.fixWeaponAppearance();
+            break;
         case RIGHT_KEY:
         case KEY_RIGHT:
             movePlayer(world, player, EAST);
+            break;
+        case LOOK_RIGHT_KEY:
+            player.facingDirection = EAST;
+            player.fixWeaponAppearance();
             break;
         case SHOOT_KEY:{
             if (!player.activeWeapon.canShoot){
