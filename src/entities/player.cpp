@@ -184,6 +184,11 @@ void Player::shootFirearm()
     activeWeapon.loadedRounds -= 1;
     if (activeWeapon.isChambered && activeWeapon.loadedRounds <= 0){
         activeWeapon.isChambered = false;
+
+        // Always keep double-barreled shotgun chambered.
+        if (activeWeapon.firearmType == FIREARM_TYPE::DB_SHOTGUN){
+            activeWeapon.isChambered = true;
+        }
     }
     else if (activeWeapon.isChambered){
         activeWeapon.chamberRoundType = activeWeapon.magazine.ammoType;
@@ -313,6 +318,13 @@ void Player::fastReloadFirearm()
         {
             isReloading = false;
             activeWeapon.canShoot = true;
+            return;
+        }
+        else if (activeWeapon.firearmType == FIREARM_TYPE::DB_SHOTGUN &&
+                 activeWeapon.loadedRounds == 2)
+        {
+            this->isReloading = false;
+            this->activeWeapon.canShoot = true;
             return;
         }
 
