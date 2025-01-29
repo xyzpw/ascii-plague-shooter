@@ -21,6 +21,7 @@ bool checkHasAmmunition(Inventory&, CARTRIDGE_TYPE);
 void handleInventoryPickupExistingFirearm(
     Inventory&, Firearm& activeWeapon, Firearm
 );
+bool checkIsShotgun(FIREARM_TYPE);
 
 std::unordered_map<double, std::string> magazineAscii{
     {0.125, "\u2581"},
@@ -645,4 +646,13 @@ void handleInventoryPickupExistingFirearm(
             addAmmunition();
         }
     }
+}
+
+bool checkIsShotgun(FIREARM_TYPE type)
+{
+    if (type == FIREARM_TYPE::BENELLI_M4 || type == FIREARM_TYPE::DB_SHOTGUN)
+    {
+        return true;
+    }
+    return false;
 }
