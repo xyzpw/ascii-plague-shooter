@@ -624,9 +624,12 @@ void handleInventoryPickupExistingFirearm(
     // Take ammunition from firearm picked up.
     auto addAmmunition = [&](){
         if (isDirectLoad){
-            int newAmmoCount = getInventoryAmmunitionCount(inventory, cartridge);
+            CARTRIDGE_TYPE cartToAdd = firearm.cartridgeType;
+            int newAmmoCount = getInventoryAmmunitionCount(
+                inventory, cartToAdd
+            );
             newAmmoCount += firearm.loadedRounds;
-            inventory.ammunition[cartridge] = newAmmoCount;
+            inventory.ammunition[cartToAdd] = newAmmoCount;
         }
         else{
             inventory.magazines.push_back(firearm.magazine);
