@@ -201,6 +201,38 @@ void Player::shootFirearm()
     usleep(activeWeapon.shootIntervalMs * 1e3);
     canSwitchFirearm = true;
     activeWeapon.canShoot = activeWeapon.loadedRounds >= 1;
+
+    // Switch shotgun to alternative ammo type if the current type is depleted
+    // and the alternative ammo type is available in inventory.
+    if (checkIsShotgun(this->activeWeapon.firearmType) &&
+        this->activeWeapon.loadedRounds == 0)
+    {
+        CARTRIDGE_TYPE& cartridge = this->activeWeapon.cartridgeType;
+        AMMO_TYPE& currAmmoType = this->activeWeapon.chamberRoundType;
+
+        int currAmmoCount = getInventoryAmmunitionCount(
+            this->inventory, cartridge
+        );
+        bool hasAltAmmo = checkHasAltShotgunAmmo(
+            this->inventory, currAmmoType
+        );
+
+        if (currAmmoCount == 0 && hasAltAmmo){
+            bool isBuckshot = cartridge ==
+                             CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
+
+            // Swap buckshot and slug.
+            cartridge = isBuckshot ? CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG :
+                        CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
+            currAmmoType = isBuckshot ? AMMO_TYPE::RIFLED_SLUG :
+                           AMMO_TYPE::PELLET_SPREAD;
+
+            // Apply swapped ammo to magazine.
+            this->activeWeapon.magazine = Magazine(
+                cartridge, 2, this->activeWeapon.loadedRounds
+            );
+        }
+    }
 }
 
 void Player::reloadFirearm()
