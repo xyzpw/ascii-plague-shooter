@@ -125,6 +125,24 @@ void World::dropSupplies()
             nextDropTime *= CARTRIDGE_BUCKSHOT_COST;
             break;
         }
+        case FIREARM_TYPE::DB_SHOTGUN:{
+            bool useSlugs = checkProbability(0.5);
+            CARTRIDGE_TYPE cartridge = useSlugs ?
+                           CARTRIDGE_TYPE::CARTRIDGE_12GA_SLUG :
+                           CARTRIDGE_TYPE::CARTRIDGE_12GA_BUCKSHOT;
+
+            firearm.cartridgeType = cartridge;
+            firearm.magazine = Magazine(cartridge, 2, 2);
+            if (useSlugs){
+                firearm.chamberRoundType = AMMO_TYPE::RIFLED_SLUG;
+            }
+
+            drop.items.ammunition[cartridge] = randIntInRange(2, 5) * 2;
+
+            nextDropTime += drop.items.ammunition.at(cartridge) + 2;
+            nextDropTime *= CARTRIDGE_BUCKSHOT_COST;
+            break;
+        }
     }
 
     drop.items.firearms.push_back(firearm);
