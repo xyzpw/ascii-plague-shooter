@@ -427,6 +427,9 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     player.hasPlantedClaymore = false;
     usleep(explosive.explosionDelay * 1e6);
 
+    // Play explosion animation.
+    playClaymoreExplosionAnimThread(world, explosive);
+
     bool lethalToPlayer = checkFatal(player.position);
 
     if (lethalToPlayer){
