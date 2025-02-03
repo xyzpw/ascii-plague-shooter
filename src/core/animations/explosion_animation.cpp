@@ -21,7 +21,7 @@ void playExplosionAnimation(World& world, Position pos, double energy)
             pos, radius
         );
 
-        for (auto& p : points)
+        for (auto p : points)
         {
             if (checkPositionInsideMap(world, p)){
                 world.animationPositions.push_back(p);
@@ -37,7 +37,6 @@ void playExplosionAnimation(World& world, Position pos, double energy)
 
 void playExplosionAnimationThread(World& world, Position pos, double energy)
 {
-    std::thread(
-        playExplosionAnimation, std::ref(world), pos, energy
-    ).detach();
+    std::thread t(playExplosionAnimation, std::ref(world), pos, energy);
+    t.detach();
 }
