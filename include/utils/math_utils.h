@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "position.h"
+#include "world_enums.h"
 
 double computeInverseSquareLaw(double value, double distance);
 double getPositionDistance(Position, Position);
@@ -13,3 +14,6 @@ double computeThrownObjectRange(int velocity, int degrees);
 double calculateExpDecay(double value, double decay, double events);
 double getBlastWaveRadius(double energy, double time);
 std::vector<Position> getMidpointCirclePositions(Position, int radius);
+std::vector<Position> getMidpointCircleArcPositions(
+    Position, DIRECTION, int radius, double degrees
+);

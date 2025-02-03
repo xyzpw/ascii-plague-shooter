@@ -1,7 +1,9 @@
 #include <cmath>
 #include <vector>
+#include <algorithm>
 #include "math_utils.h"
 #include "position.h"
+#include "world_enums.h"
 #include "constants/physics_constants.h"
 #include "constants/math_constants.h"
 
@@ -116,4 +118,54 @@ std::vector<Position> getMidpointCirclePositions(Position pos, int radius)
     }
 
     return points;
+}
+
+/*
+    Get midpoint circle positions and filter them to only be
+    the ones within an arc of specified degrees and direction.
+*/
+std::vector<Position> getMidpointCircleArcPositions(
+        Position pos, DIRECTION direction, int radius, double degrees)
+{
+    std::vector<Position> arcPoints;
+    std::vector<Position> circlePoints = getMidpointCirclePositions(
+        pos, radius
+    );
+
+    int degBase;
+    if (direction == NORTH || direction == SOUTH){
+        degBase = direction == NORTH ? 90 : 270;
+    }
+    else {
+        degBase = direction == EAST ? 0 : 180;
+    }
+    double degLow = degBase - degrees/2.0;
+    double degHigh = degBase + degrees/2.0;
+
+    if (degLow < 0)
+        degLow += 360;
+    if (degHigh >= 360)
+        degHigh -= 360;
+
+    auto isInArc = [&](const Position& p){
+        double angle = std::atan2(
+            pos.row - p.row,
+            p.column - pos.column
+        ) * (180.0 / PI);
+        if (angle < 0) angle += 360.0;
+
+        if (degLow < degHigh){
+            return angle >= degLow && angle <= degHigh;
+        }
+        else {
+            return angle >= degLow || angle <= degHigh;
+        }
+    };
+
+    std::copy_if(
+        circlePoints.begin(), circlePoints.end(),
+        std::back_inserter(arcPoints), isInArc
+    );
+
+    return arcPoints;
 }
