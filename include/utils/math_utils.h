@@ -17,3 +17,4 @@ std::vector<Position> getMidpointCirclePositions(Position, int radius);
 std::vector<Position> getMidpointCircleArcPositions(
     Position, DIRECTION, int radius, double degrees
 );
+double calculatePascals(double energy, double distance);

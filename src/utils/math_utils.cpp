@@ -169,3 +169,25 @@ std::vector<Position> getMidpointCircleArcPositions(
 
     return arcPoints;
 }
+
+// Calculate the pascals of an explosion with the energy and distance.
+double calculatePascals(double energy, double distance)
+{
+    if (distance == 0) distance = 0.5;
+
+    double netExplosiveMass = energy / 4184e+3;
+    double scaledDistance = distance / std::cbrt(netExplosiveMass);
+
+    double mPa;
+    if (scaledDistance < 8){
+        mPa = 1700;
+        mPa *= std::exp(-7.14 * std::pow(scaledDistance, 0.28));
+        mPa += 0.0156;
+    }
+    else {
+        mPa = 8000;
+        mPa *= std::exp(-10.46 * std::pow(scaledDistance, 0.1));
+    }
+
+    return mPa * 1e+6;
+}
