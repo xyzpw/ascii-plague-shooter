@@ -328,7 +328,6 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
             getGrenade(), playerFragmentHits, playerDistance
         );
 
-
         if (fatal){
             player.gameStats.setEndGameMessage(GAME_END_MSG_GRENADE);
             player.alive = false;
@@ -408,9 +407,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         int distance = getPositionDistance(pos, claymorePosition);
 
         int energy = kineticEnergy - kineticEnergyLossPerMeter * distance;
-        int pascals = computeInverseSquareLaw(
-            explosive.explosionPascals, distance
-        );
+        double pascals = calculatePascals(explosionEnergy, distance);
 
         if (checkProbability(calculateFragmentFatalProbability(
             energy, fragments)))
@@ -438,10 +435,9 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
         return;
     }
 
-    double pascalsAtPlayer = computeInverseSquareLaw(
-        explosionPascals, getPositionDistance(
-            player.position, claymorePosition
-        )
+    double pascalsAtPlayer = calculatePascals(
+        explosionEnergy,
+        getPositionDistance(player.position, claymorePosition)
     );
 
     double isCloseProb = calculateEarRuptureProbability(pascalsAtPlayer);
