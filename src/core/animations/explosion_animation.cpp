@@ -50,7 +50,7 @@ void playClaymoreExplosionAnimation(World& world, Explosive claymore)
 
     std::vector<Position>& animPositions = world.animationPositions;
 
-    int claymoreEnergy = claymore.explosionPascals;
+    int claymoreEnergy = claymore.explosionEnergy;
     int arcDeg = CLAYMORE_FRAGMENT_DEGREES;
     Position& claymorePos = claymore.position;
     if (!claymore.facingDirection.has_value()){

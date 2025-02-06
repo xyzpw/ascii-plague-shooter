@@ -300,7 +300,7 @@ void handleGrenadeExplosion(World& world, Player& player, int explosiveId)
     const int PENETRATE_THRESHOLD =
                 getGrenade().fragmentPenetrateEnergyThreshold;
     int energyLossPerMeter = getGrenade().fragmentKineticEnergyLossPerMeter;
-    int explosionEnergy = getGrenade().explosionPascals;
+    int explosionEnergy = getGrenade().explosionEnergy;
     int activeFragments = fragmentCount; // number of fragment projectiles.
 
     usleep(getGrenade().explosionDelay * 1e6);
@@ -397,7 +397,7 @@ void handleClaymoreExplosion(World& world, Player& player, Explosive explosive)
     int kineticEnergyLossPerMeter = explosive.fragmentKineticEnergyLossPerMeter;
     int activeFragmentCount = fragmentCount;
 
-    int explosionPascals = explosive.explosionPascals;
+    int explosionEnergy = explosive.explosionEnergy;
 
     // Check if explosion was lethal.
     auto checkFatal = [&](Position pos){
@@ -505,7 +505,7 @@ void handleM16MineExplosion(World& world, Player& player, Explosive mine)
     const int FRAGMENT_KE = mine.fragmentKineticEnergy;
     const double FRAGMENT_KE_LOSS = mine.fragmentKineticEnergyLossPerMeter;
     const double PENETRATE_THRESHOLD = mine.fragmentPenetrateEnergyThreshold;
-    const double EXPLOSION_ENERGY = mine.explosionPascals;
+    const double EXPLOSION_ENERGY = mine.explosionEnergy;
     int activeFragmentCount = mine.fragmentCount;
 
     // Delay between mine trigger and explosion.

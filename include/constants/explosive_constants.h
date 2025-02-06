@@ -2,9 +2,9 @@
 
 constexpr int CLAYMORE_FRAGMENT_DEGREES = 60;
 
-constexpr int M67_PASCALS = 1025422;
-constexpr int CLAYMORE_PASCALS = 3814639;
-constexpr int M16_MINE_PASCALS = 1'897'830;
+constexpr int M67_ENERGY = 1025422;
+constexpr int CLAYMORE_ENERGY = 3814639;
+constexpr int M16_MINE_ENERGY = 1'897'830;
 
 constexpr int M67_FRAGMENT_COUNT_MIN = 774;
 constexpr int M67_FRAGMENT_COUNT_MAX = 3483;

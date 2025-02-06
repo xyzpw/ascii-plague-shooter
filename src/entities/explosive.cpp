@@ -8,7 +8,7 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
     switch (type)
     {
         case EXPLOSIVE_TYPE::M67_GRENADE:
-            explosionPascals = M67_PASCALS;
+            explosionEnergy = M67_ENERGY;
             explosionDelay = randIntInRange(
                 static_cast<int>(M67_EXPLOSION_DELAY_MIN * 10),
                 static_cast<int>(M67_EXPLOSION_DELAY_MAX * 10)
@@ -25,7 +25,7 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
             fragmentPenetrateEnergyThreshold = M67_PENETRATE_ENERGY_THRESHOLD;
             break;
         case EXPLOSIVE_TYPE::M18A1_CLAYMORE:
-            explosionPascals = CLAYMORE_PASCALS;
+            explosionEnergy = CLAYMORE_ENERGY;
             explosionDelay = CLAYMORE_EXPLOSION_DELAY;
             explodeAudioFile = "explosion.wav";
             explodeCloseAudioFile = "explosion_close.wav";
@@ -37,7 +37,7 @@ Explosive::Explosive(EXPLOSIVE_TYPE type)
                     CLAYMORE_PENETRATE_ENERGY_THRESHOLD;
             break;
         case EXPLOSIVE_TYPE::M16_MINE:
-            explosionPascals = M16_MINE_PASCALS;
+            explosionEnergy = M16_MINE_ENERGY;
             explosionDelay = M16_MINE_EXPLOSION_DELAY;
             explodeAudioFile = "explosion.wav";
             explodeCloseAudioFile = "explosion_close.wav";

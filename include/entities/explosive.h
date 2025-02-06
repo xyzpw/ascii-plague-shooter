@@ -10,7 +10,7 @@
 
 struct Explosive{
     EXPLOSIVE_TYPE explosiveType;
-    int explosionPascals;
+    int explosionEnergy;
     double explosionDelay = 0;
     std::string explodeAudioFile = "";
     std::string explodeCloseAudioFile = "";
