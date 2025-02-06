@@ -94,9 +94,7 @@ bool checkShouldHinder(HIT_LOCATION location)
 bool checkExplosionWasFatal(Explosive explosive,
                             int fragmentHits, double distance)
 {
-    double area = computeAreaFromDistance(distance);
-
-    int pascals = computeInverseSquareLaw(explosive.explosionPascals, distance);
+    double pascals = calculatePascals(explosive.explosionEnergy, distance);
 
     int ke = explosive.fragmentKineticEnergy -
              explosive.fragmentKineticEnergyLossPerMeter * distance;
@@ -124,8 +122,8 @@ int getFragmentDelayedDeathLossRate(int fragmentHits)
 
 bool checkExplosionRupturedEar(Explosive explosive, double distance)
 {
-    int pascalAtDistance = computeInverseSquareLaw(
-        explosive.explosionPascals, distance
+    double pascalAtDistance = calculatePascals(
+        explosive.explosionEnergy, distance
     );
     bool isClose = calculateEarRuptureProbability(pascalAtDistance);
 
