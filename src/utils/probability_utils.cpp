@@ -34,7 +34,10 @@ double calculateImpactFatalProbability(HIT_LOCATION location, int joules)
 
 double calculateEarRuptureProbability(int pascals)
 {
-    double probability = std::clamp(-12.6 + 1.524 * std::log(pascals), 0.0, 1.0);
+    pascals *= 0.1; // multiply by 100 ms
+
+    double probability = -12.6 + 1.524 * std::log(pascals);
+    probability = std::clamp(probability, 0.0, 1.0);
     return probability;
 }
 
