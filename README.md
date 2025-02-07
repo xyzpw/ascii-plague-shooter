@@ -3,7 +3,7 @@
 
 **ascii-plague-shooter** is a simple top-down shooter game made with ncurses.<br>
 
-![ascii-plague-shooter-preview-github](https://github.com/user-attachments/assets/4598c582-620b-4bfb-9fe7-5a88e28c47fa)
+<video src="https://github.com/user-attachments/assets/b900ae9e-74e1-45a2-b686-19b36e1c66c0"></video>
 
 ## Gameplay
 The objective is to survive against rage-infected zombie-like enemies
